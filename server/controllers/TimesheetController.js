@@ -97,7 +97,7 @@ class TimesheetController {
                         id: timesheet.id
                     }
                 });
-                res.status(201).send({success: 'Delete successfully!'});
+                res.status(201).send({success: 'Deleted successfully!'});
             } else {
                 res.status(409).json({error: 'Timesheet doesn\'t exist!'})
             }
