@@ -2,8 +2,6 @@
 
 /.idea
 
-/config
-
 config/env.js
 config/config.json
 
