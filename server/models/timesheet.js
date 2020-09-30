@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Timesheet.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false,
+    },
     status: {
       type: DataTypes.STRING,
       allowNull: false,
