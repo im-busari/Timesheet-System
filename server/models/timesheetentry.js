@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     TimesheetEntry.init({
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+            allowNull: false,
+        },
         timesheetId: {
             type: DataTypes.UUID,
             allowNull: false
