@@ -1,13 +1,13 @@
-import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import { Navigation } from "./components/Navigation";
-import { Title } from "./components/generic/Title";
+
+import React from "react";
+import { AppRoutes } from "./AppRoutes";
 
 function App() {
   return (
     <>
-      <Navigation />
-      <Title color="yellow" text="Sample Title"></Title>
+      <AppRoutes />
     </>
   );
 }
