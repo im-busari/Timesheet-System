@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
 class UserController {
+  //  Register user
   async signup(req, res) {
     try {
       const user = await User.create({
@@ -16,6 +17,8 @@ class UserController {
       res.status(403).send(err.errors[0].message);
     }
   }
+
+  async signin(req, res) {}
 }
 
 module.exports = new UserController();
