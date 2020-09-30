@@ -1,12 +1,35 @@
+const {Timesheet} = require('../models');
 
 class TimesheetController {
 
-    createTimesheet = async (req, res) => {
+    async createTimesheet(req, res) {
         try {
+            // Finds if the user already has a timesheet for this week
+            const allTimesheet = await Timesheet.findOne({
+                where: {
+                    startDate: req.body.startDate,
+                    userId: req.body.userId,
+                }
+            });
 
-            res.status(200).send('example Controller');
+            let timesheet;
+
+            if (!allTimesheet) {
+                timesheet = await Timesheet.create({
+                    status: 'Open',
+                    startDate: req.body.startDate,
+                    userId: req.body.userId,
+                });
+            }
+
+            if (timesheet) {
+                res.status(201).send(timesheet.toJSON());
+            } else {
+                res.status(409).send({error: 'Already created!'});
+            }
+
         } catch (err) {
-            res.status(500).send('Something is wrong with our server.');
+            res.status(403).json(err);
         }
     }
 }
