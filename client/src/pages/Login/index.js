@@ -7,10 +7,10 @@ import { Title } from "../../components/generic/Title";
 export const LoginPage = () => {
   const fields = [
     {
-      name: "username",
-      label: "Username",
-      type: "username",
-      placeholder: "Enter your username",
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email address",
       autoComplete: "none",
     },
     {

@@ -7,6 +7,13 @@ import { Title } from "../../components/generic/Title";
 export const RegisterPage = () => {
   const fields = [
     {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email address",
+      autoComplete: "none",
+    },
+    {
       name: "username",
       label: "Username",
       type: "username",
