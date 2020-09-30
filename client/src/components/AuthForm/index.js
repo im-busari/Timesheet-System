@@ -1,18 +1,8 @@
 import React from "react";
-import { Formik, Form, Field } from "formik";
+import { Formik, Field } from "formik";
 import { FormInput } from "../generic/FormInput";
 import { Button } from "react-bootstrap";
-import styled from "styled-components";
-
-const FormStyled = styled(Form)`
-  width: 15%;
-`;
-
-const ButtonWrapper = styled(Button)`
-  display: flex;
-  place-content: center;
-  margin-top: 2rem;
-`;
+import { FormStyled, ButtonWrapper } from "./styles";
 
 export const AuthForm = ({
   fields,
@@ -29,11 +19,12 @@ export const AuthForm = ({
       validationSchema={validationSchema}
     >
       {({ isSubmitting, isValid, touched, errors }) => {
+        const isDisabled = isSubmitting || !isValid;
+
         return (
           <FormStyled>
             {fields.map((field, index) => {
-              const { type, placeholder, autoComplete } = field;
-              const label = type.charAt(0).toUpperCase() + type.slice(1);
+              const { name, type, placeholder, autoComplete, label } = field;
 
               return (
                 <Field
@@ -42,19 +33,22 @@ export const AuthForm = ({
                   errors={errors[type]}
                   key={index}
                   type={type || "text"}
-                  name={type}
+                  name={name}
                   label={label}
                   placeholder={placeholder}
+                  autoComplete={autoComplete}
                 />
               );
             })}
 
             <ButtonWrapper>
               <Button
-                variant="outline-secondary"
+                variant={isDisabled ? "outline-secondary" : "secondary"}
                 type="submit"
-                disabled={isSubmitting || !isValid}
-              ></Button>
+                disabled={isDisabled}
+              >
+                {buttonText}
+              </Button>
             </ButtonWrapper>
           </FormStyled>
         );
