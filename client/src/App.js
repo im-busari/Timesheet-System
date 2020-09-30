@@ -10,10 +10,9 @@ import { Title } from "./components/generic/Title";
 function App() {
   return (
     <>
+      <Navigation />
       <LoginPage />
       <RegisterPage />
-      <Navigation />
-      <Title color="yellow" text="Sample Title"></Title>
     </>
   );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { AuthForm } from "../../components/AuthForm";
 import { registerValidation } from "../../validation";
 import { Layout } from "../Layout";
+import { Title } from "../../components/generic/Title";
 
 export const RegisterPage = () => {
   const fields = [
@@ -34,10 +35,10 @@ export const RegisterPage = () => {
 
   return (
     <Layout direction="column">
-      <h1>Register</h1>
+      <Title text="Register" />
       <div>
         <AuthForm
-          buttonText="Login"
+          buttonText="Register"
           fields={fields}
           initialValues={{ username: "", password: "", rePassword: "" }}
           onSubmit={handleSubmit}
