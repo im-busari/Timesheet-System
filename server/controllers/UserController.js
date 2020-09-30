@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const constants = require('../config/env');
 const { User } = require('../models');
 
 class UserController {
@@ -18,7 +20,29 @@ class UserController {
     }
   }
 
-  async signin(req, res) {}
+  //  Login User
+  async signin(req, res) {
+    try {
+      const user = await User.findOne({
+        where: { email: req.body.email },
+      });
+
+      if (
+        user &&
+        req.body.password &&
+        bcrypt.compareSync(req.body.password, user.password)
+      ) {
+        const token = jwt.sign({ user }, constants.JWT_SECRET, {
+          expiresIn: '24h',
+        });
+        res.status(200).json({ token });
+      } else {
+        res.status(403).send('Wrong login credentials.');
+      }
+    } catch (err) {
+      res.status(403).json(`Something went wrong: ${err}`);
+    }
+  }
 }
 
 module.exports = new UserController();
