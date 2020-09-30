@@ -1,12 +1,11 @@
 class ExampleController {
-
-  getExample (req, res) {
+  getExample(req, res) {
     try {
       res.status(200).send('example Controller');
     } catch (err) {
       res.status(500).send('Something is wrong with our server.');
     }
-}
+  }
 }
 
 module.exports = new ExampleController();

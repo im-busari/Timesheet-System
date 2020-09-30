@@ -31,6 +31,7 @@ server.get('/', (req, res) => {
   res.send('Routing works');
 });
 server.use('/example', require('./routes/example'));
+server.use('/users', require('./routes/users'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
 
