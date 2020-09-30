@@ -4,6 +4,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const constants = require('./config/env');
+const db = require('./models/index');
 const server = express();
 
 const PORT = constants.PORT || 4000;
