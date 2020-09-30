@@ -9,13 +9,13 @@ module.exports = {
         defaultValue: Sequelize.UUIDV4,
       },
       timesheetId: {
-        type: Sequelize.STRING
+        type: Sequelize.UUID,
       },
       projectId: {
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
       taskId: {
-        type: Sequelize.STRING
+        type: Sequelize.UUID
       },
       createdAt: {
         allowNull: false,
