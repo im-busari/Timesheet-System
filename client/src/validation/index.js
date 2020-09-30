@@ -5,7 +5,7 @@ const passwordRegex = new RegExp(
   "gm"
 );
 
-const emailRegex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, "g");
+const emailRegex = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/, "g");
 
 export const registerValidation = yup.object({
   email: yup
