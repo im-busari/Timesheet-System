@@ -47,7 +47,12 @@ export const RegisterPage = () => {
         <AuthForm
           buttonText="Register"
           fields={fields}
-          initialValues={{ username: "", password: "", rePassword: "" }}
+          initialValues={{
+            email: "",
+            username: "",
+            password: "",
+            rePassword: "",
+          }}
           onSubmit={handleSubmit}
           validationSchema={registerValidation}
         />
