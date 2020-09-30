@@ -1,7 +1,15 @@
-const {Timesheet} = require('../models');
+const { Timesheet } = require('../models');
+const uuidValidator = require('../utils/validateUuid');
 
 class TimesheetController {
     async getTimesheetsByUserId(req, res) {
+
+        // Checks if the id is valid
+        if(!uuidValidator(req.params.userId)) {
+            res.status(404).send({error: 'Invalid user id!'});
+            return;
+        }
+
         try {
             const timesheets = await Timesheet.findAll({
                 where: {
@@ -9,7 +17,7 @@ class TimesheetController {
                 }
             });
 
-            if (timesheets) {
+            if (timesheets.length !== 0) {
                 res.status(201).send(timesheets);
             } else {
                 res.status(404).send({error: 'The user doesn\'t have any timesheets!'});
@@ -21,13 +29,20 @@ class TimesheetController {
     }
 
     async getTimesheetById(req, res) {
+
+        // Checks if the id is valid
+        if(!uuidValidator(req.params.id)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
         try {
             const timesheet = await Timesheet.findByPk(req.params.id);
 
             if (timesheet) {
                 res.status(201).send(timesheet);
             } else {
-                res.status(404).send({error: 'Timesheet with the given name doesn\'t exist!'});
+                res.status(404).send({error: 'Timesheet with the given id doesn\'t exist!'});
             }
 
         } catch (err) {
@@ -84,7 +99,7 @@ class TimesheetController {
                 });
                 res.status(201).send({success: 'Delete successfully!'});
             } else {
-                res.status(409).json({error: 'Timesheet doesn\'t exist'})
+                res.status(409).json({error: 'Timesheet doesn\'t exist!'})
             }
         } catch (err) {
             res.status(403).json(err);
