@@ -33,7 +33,7 @@ export const LoginPage = () => {
         <AuthForm
           buttonText="Login"
           fields={fields}
-          initialValues={{ username: "", password: "" }}
+          initialValues={{ email: "", password: "" }}
           onSubmit={handleSubmit}
           validationSchema={loginValidation}
         />
