@@ -29,8 +29,8 @@ export const AuthForm = ({
               return (
                 <Field
                   as={FormInput}
-                  touched={touched[type]}
-                  errors={errors[type]}
+                  touched={touched[name]}
+                  errors={errors[name]}
                   key={index}
                   type={type || "text"}
                   name={name}

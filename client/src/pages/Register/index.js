@@ -1,6 +1,7 @@
 import React from "react";
 import { AuthForm } from "../../components/AuthForm";
 import { registerValidation } from "../../validation";
+import { Layout } from "../Layout";
 
 export const RegisterPage = () => {
   const fields = [
@@ -32,15 +33,17 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div>
+    <Layout direction="column">
       <h1>Register</h1>
-      <AuthForm
-        buttonText="Login"
-        fields={fields}
-        initialValues={{ username: "", password: "", rePassword: "" }}
-        onSubmit={handleSubmit}
-        validationSchema={registerValidation}
-      />
-    </div>
+      <div>
+        <AuthForm
+          buttonText="Login"
+          fields={fields}
+          initialValues={{ username: "", password: "", rePassword: "" }}
+          onSubmit={handleSubmit}
+          validationSchema={registerValidation}
+        />
+      </div>
+    </Layout>
   );
 };

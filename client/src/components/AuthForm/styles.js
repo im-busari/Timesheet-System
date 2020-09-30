@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Form } from "formik";
 
 const FormStyled = styled(Form)`
-  width: 15%;
+  width: 100%;
 `;
 
 const ButtonWrapper = styled.div`

@@ -1,6 +1,7 @@
 import React from "react";
 import { AuthForm } from "../../components/AuthForm";
 import { loginValidation } from "../../validation";
+import { Layout } from "../Layout";
 
 export const LoginPage = () => {
   const fields = [
@@ -25,15 +26,17 @@ export const LoginPage = () => {
   };
 
   return (
-    <div>
+    <Layout direction="column">
       <h1>Login</h1>
-      <AuthForm
-        buttonText="Login"
-        fields={fields}
-        initialValues={{ username: "", password: "" }}
-        onSubmit={handleSubmit}
-        validationSchema={loginValidation}
-      />
-    </div>
+      <div>
+        <AuthForm
+          buttonText="Login"
+          fields={fields}
+          initialValues={{ username: "", password: "" }}
+          onSubmit={handleSubmit}
+          validationSchema={loginValidation}
+        />
+      </div>
+    </Layout>
   );
 };
