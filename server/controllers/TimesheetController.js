@@ -32,6 +32,31 @@ class TimesheetController {
             res.status(403).json(err);
         }
     }
+
+    async deleteTimesheet(req, res) {
+        try {
+            // Finds one by user id and start date.
+            const timesheet = await Timesheet.findOne({
+                where: {
+                    startDate: req.body.startDate,
+                    userId: req.body.userId
+                }
+            });
+
+            if (timesheet) {
+                await Timesheet.destroy({
+                    where: {
+                        id: timesheet.id
+                    }
+                });
+                res.status(201).send({success: 'Delete successfully!'});
+            } else {
+                res.status(409).json({error: 'Timesheet doesn\'t exist'})
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
 }
 
 module.exports = new TimesheetController();
