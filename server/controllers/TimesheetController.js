@@ -1,6 +1,39 @@
 const {Timesheet} = require('../models');
 
 class TimesheetController {
+    async getTimesheetsByUserId(req, res) {
+        try {
+            const timesheets = await Timesheet.findAll({
+                where: {
+                    userId: req.params.userId,
+                }
+            });
+
+            if (timesheets) {
+                res.status(201).send(timesheets);
+            } else {
+                res.status(404).send({error: 'The user doesn\'t have any timesheets!'});
+            }
+
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    async getTimesheetById(req, res) {
+        try {
+            const timesheet = await Timesheet.findByPk(req.params.id);
+
+            if (timesheet) {
+                res.status(201).send(timesheet);
+            } else {
+                res.status(404).send({error: 'Timesheet with the given name doesn\'t exist!'});
+            }
+
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
 
     async createTimesheet(req, res) {
         try {

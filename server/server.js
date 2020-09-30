@@ -32,7 +32,7 @@ server.get('/', (req, res) => {
   res.send('Routing works');
 });
 server.use('/example', require('./routes/example'));
-server.use('/timesheet', require('./routes/timesheet'));
+server.use('/timesheets', require('./routes/timesheet'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
 
