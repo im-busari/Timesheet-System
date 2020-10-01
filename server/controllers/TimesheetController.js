@@ -1,4 +1,4 @@
-const { Timesheet } = require('../models');
+const {Timesheet, TimesheetEntry} = require('../models');
 const uuidValidator = require('../utils/validateUuid');
 const getUserId = require('../utils/getUserId');
 
@@ -8,7 +8,7 @@ class TimesheetController {
         try {
             const timesheets = await Timesheet.findAll({
                 where: {
-                    userId: getUserId(),
+                    userId: getUserId(req),
                 }
             });
 
@@ -26,7 +26,7 @@ class TimesheetController {
     async getTimesheetById(req, res) {
 
         // Checks if the id is valid
-        if(!uuidValidator(req.params.id)) {
+        if (!uuidValidator(req.params.id)) {
             res.status(404).send({error: 'Invalid timesheet id!'});
             return;
         }
@@ -45,13 +45,22 @@ class TimesheetController {
         }
     }
 
+    async updateTimesheet(req, res) {
+        try {
+
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
     async createTimesheet(req, res) {
+
         try {
             // Finds if the user already has a timesheet for this week
             const allTimesheet = await Timesheet.findOne({
                 where: {
                     startDate: req.body.startDate,
-                    userId: getUserId(),
+                    userId: getUserId(req),
                 }
             });
 
@@ -61,7 +70,7 @@ class TimesheetController {
                 timesheet = await Timesheet.create({
                     status: 'Open',
                     startDate: req.body.startDate,
-                    userId: getUserId(),
+                    userId: getUserId(req),
                 });
             }
 
@@ -79,7 +88,7 @@ class TimesheetController {
     async deleteTimesheet(req, res) {
 
         // Checks if the id is valid
-        if(!uuidValidator(req.params.id)) {
+        if (!uuidValidator(req.params.id)) {
             res.status(404).send({error: 'Invalid timesheet id!'});
             return;
         }
