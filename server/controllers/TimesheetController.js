@@ -82,12 +82,18 @@ class TimesheetController {
     }
 
     async deleteTimesheet(req, res) {
+
+        // Checks if the id is valid
+        if(!uuidValidator(req.params.id)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
         try {
-            // Finds one by user id and start date.
+            // Finds one by id.
             const timesheet = await Timesheet.findOne({
                 where: {
-                    startDate: req.body.startDate,
-                    userId: req.body.userId
+                    id: req.params.id,
                 }
             });
 
