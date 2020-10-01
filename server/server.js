@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const constants = require('./config/env');
+const db = require('./models/index');
 const server = express();
 const PORT = constants.PORT || 4000;
 const isAuth = require('./middlewares/isAuth');
@@ -57,8 +58,10 @@ server.use((req, res, next) => {
 server.get('/', (req, res) => {
   res.send('Routing works');
 });
-server.use('/example', isAuth, require('./routes/example'));
+
+server.use('/example', require('./routes/example'));
 server.use('/users', require('./routes/users'));
+server.use('/timesheets', require('./routes/timesheet'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
 
