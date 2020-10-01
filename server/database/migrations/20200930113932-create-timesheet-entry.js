@@ -10,24 +10,30 @@ module.exports = {
       },
       timesheetId: {
         type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'Timesheets',
+          },
+          key: 'id',
+        },
       },
       projectId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       taskId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('TimesheetEntries');
-  }
+  },
 };
