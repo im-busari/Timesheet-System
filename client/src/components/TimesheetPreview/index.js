@@ -2,7 +2,7 @@ import React from "react";
 import { TimesheetPreviewListItem } from "../TimesheetPreviewListItem";
 import { Table } from "react-bootstrap";
 import { TableHeader } from "./styles";
-import { Layout } from "../../pages/Layout";
+import { Layout } from "../../Pages/Layout";
 
 export const TimesheetPreview = () => {
   return (

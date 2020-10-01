@@ -9,7 +9,7 @@ import {
 import { LoginPage } from "./Pages";
 import { RegisterPage } from "./Pages";
 import { Navigation } from "./components/Navigation";
-import { AllTimesheetsPage } from "./pages/AllTimesheets";
+import { AllTimesheetsPage } from "./Pages";
 import { CreateTimesheet } from "./Pages";
 import { EditTimesheet } from "./Pages";
 
