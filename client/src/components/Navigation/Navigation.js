@@ -4,50 +4,48 @@ import {
   StyledNavItem,
   StyledNavLink,
   MainContainer,
-  SubContainer,
-  Username,
+  StyledLink,
 } from "./NavigationStyledComponents";
 import { Logo } from "../generic/Logo";
 
 export const Navigation = () => {
-  const mockUser = {
-    username: "mockUsername",
-  };
-
-  if (mockUser) {
-    return (
-      <StyledNav>
-        <MainContainer>
+  return (
+    <StyledNav>
+      <MainContainer>
+        <StyledLink to="/">
           <Logo />
-          <StyledNavItem>
-            <StyledNavLink href="#">All Timesheets</StyledNavLink>
-          </StyledNavItem>
-          <StyledNavItem>
-            <StyledNavLink href="#">Create Timesheet</StyledNavLink>
-          </StyledNavItem>
-        </MainContainer>
+        </StyledLink>
+        <StyledNavItem>
+          <StyledNavLink as={StyledLink} to="/timesheets">
+            All Timesheets
+          </StyledNavLink>
+        </StyledNavItem>
+        <StyledNavItem>
+          <StyledNavLink as={StyledLink} to="/timesheets/create">
+            Create Timesheet
+          </StyledNavLink>
+        </StyledNavItem>
+      </MainContainer>
 
-        <SubContainer>
-          <StyledNavItem>
-            <StyledNavLink href="#">Logout</StyledNavLink>
-          </StyledNavItem>
-          <Username>{`User: ${mockUser.username}`}</Username>
-        </SubContainer>
-      </StyledNav>
-    );
-  } else {
-    return (
-      <StyledNav>
-        <MainContainer>
-          <Logo />
-          <StyledNavItem>
-            <StyledNavLink href="#">Login</StyledNavLink>
-          </StyledNavItem>
-          <StyledNavItem>
-            <StyledNavLink href="#">Register</StyledNavLink>
-          </StyledNavItem>
-        </MainContainer>
-      </StyledNav>
-    );
-  }
+      <MainContainer>
+        <StyledNavItem>
+          <StyledNavLink as={StyledLink} to="/login">
+            Login
+          </StyledNavLink>
+        </StyledNavItem>
+
+        <StyledNavItem>
+          <StyledNavLink as={StyledLink} to="/register">
+            Register
+          </StyledNavLink>
+        </StyledNavItem>
+
+        <StyledNavItem>
+          <StyledNavLink as={StyledLink} to="/logout">
+            Log out
+          </StyledNavLink>
+        </StyledNavItem>
+      </MainContainer>
+    </StyledNav>
+  );
 };

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 export const StyledNav = styled(Nav)`
   display: flex;
@@ -34,4 +35,8 @@ export const StyledNavLink = styled(Nav.Link)`
   :hover {
     color: var(--white);
   }
+`;
+
+export const StyledLink = styled(Link)`
+  margin-right: 1rem;
 `;
