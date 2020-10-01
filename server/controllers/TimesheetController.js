@@ -16,12 +16,14 @@ class TimesheetController {
                 const result = [];
 
                 for (const timesheet in timesheets) {
-                    const tsh = timesheets[timesheet];
-                    const entries = await tsh.getTimesheetEntries();
-                    result.push({
-                        timesheet: tsh,
-                        entries: entries
-                    });
+                    const element = {};
+                    const current = timesheets[timesheet];
+                    const entries = await current.getTimesheetEntries();
+
+                    element.data = current;
+                    element.entries = entries;
+
+                    result.push({timesheet: element});
                 }
 
                 res.status(201).send(result);
