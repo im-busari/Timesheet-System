@@ -6,3 +6,5 @@ config/env.js
 config/config.json
 
 /log
+/public
+/public/sessionsTest.js
