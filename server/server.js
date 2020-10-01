@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 const constants = require('./config/env');
 const server = express();
 
+// TODO: remove isAuth
+const isAuth = require('./middlewares/isAuth');
+
 const PORT = constants.PORT || 4000;
 
 //  Logging requests
@@ -30,7 +33,7 @@ server.use(bodyParser.json());
 server.get('/', (req, res) => {
   res.send('Routing works');
 });
-server.use('/example', require('./routes/example'));
+server.use('/example', isAuth, require('./routes/example'));
 server.use('/users', require('./routes/users'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
