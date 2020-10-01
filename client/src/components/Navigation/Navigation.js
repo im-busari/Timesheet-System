@@ -16,7 +16,7 @@ export const Navigation = () => {
           <Logo />
         </StyledLink>
         <StyledNavItem>
-          <StyledNavLink as={StyledLink} to="/timesheets">
+          <StyledNavLink as={StyledLink} to="/">
             All Timesheets
           </StyledNavLink>
         </StyledNavItem>
