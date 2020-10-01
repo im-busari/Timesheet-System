@@ -101,6 +101,10 @@ class TimesheetController {
                     status: 'Open',
                     startDate: req.body.startDate,
                     userId: getUserId(req),
+                }, {
+                    includes: {
+                        userId: getUserId(req)
+                    }
                 });
             }
 
