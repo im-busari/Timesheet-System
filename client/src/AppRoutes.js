@@ -9,17 +9,14 @@ import {
 import { LoginPage } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import { Navigation } from "./components/Navigation";
+import { AllTimesheetsPage } from "./pages/AllTimesheets";
 
 export const AppRoutes = () => {
-  const Home = () => {
-    return <div>Yo</div>;
-  };
-
   return (
     <Router>
       <Navigation />
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" component={AllTimesheetsPage} />
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
       </Switch>
