@@ -1,13 +1,13 @@
 const rfs = require('rotating-file-stream');
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const constants = require('./config/env');
 const server = express();
-const { User } = require('./models');
 const PORT = constants.PORT || 4000;
 const isAuth = require('./middlewares/isAuth');
 
@@ -29,6 +29,7 @@ server.use(
 );
 server.use(bodyParser.json());
 server.use(cookieParser());
+server.use(cors()); // TODO: Fix CORS
 
 // initialize express-session to allow us track the logged-in user across sessions.
 server.use(
