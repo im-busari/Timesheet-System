@@ -5,8 +5,18 @@ import "./App.css";
 import "./config/axios";
 import React from "react";
 import { AppRoutes } from "./AppRoutes";
+import { useCheckSession } from "./hooks";
+import { useSelector } from "react-redux";
 
 function App() {
+  useCheckSession();
+  const isSessionChecked = useSelector((state) => state.user.isSessionChecked);
+  console.log(isSessionChecked);
+
+  if (!isSessionChecked) {
+    return null;
+  }
+
   return (
     <>
       <AppRoutes />

@@ -3,7 +3,9 @@ import { AuthForm } from "../../components/AuthForm";
 import { loginValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
-import { post } from "../../api/user";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/slices/user";
+import { useHistory } from "react-router-dom";
 
 export const LoginPage = () => {
   const fields = [
@@ -23,8 +25,12 @@ export const LoginPage = () => {
     },
   ];
 
-  const handleSubmit = () => {
-    post.login();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const loginUser = async (values, actions) => {
+    await login(values)(dispatch);
+    actions.setSubmitting(false);
+    history.push("/");
   };
 
   return (
@@ -35,7 +41,7 @@ export const LoginPage = () => {
           buttonText="Login"
           fields={fields}
           initialValues={{ email: "", password: "" }}
-          onSubmit={handleSubmit}
+          onSubmit={loginUser}
           validationSchema={loginValidation}
         />
       </div>
