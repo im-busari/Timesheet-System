@@ -1,7 +1,8 @@
 class ExampleController {
   getExample(req, res) {
     try {
-      res.status(200).send('example Controller');
+      const user = req.session.user;
+      res.status(200).send(user.username);
     } catch (err) {
       res.status(500).send('Something is wrong with our server.');
     }

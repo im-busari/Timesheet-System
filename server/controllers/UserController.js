@@ -13,6 +13,7 @@ class UserController {
         password: req.body.password, // Hashing set function inside the module
       });
       if (user) {
+        req.session.user = user;
         res.status(201).send(user.toJSON());
       }
     } catch (err) {
@@ -35,6 +36,7 @@ class UserController {
         const token = jwt.sign({ user }, constants.JWT_SECRET, {
           expiresIn: '24h',
         });
+        req.session.user = user;
         res.status(200).json({ token });
       } else {
         res.status(403).send('Wrong login credentials.');
