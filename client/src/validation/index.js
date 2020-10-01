@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 const passwordRegex = new RegExp(
-  /^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/,
+  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,}$/,
   "gm"
 );
 
