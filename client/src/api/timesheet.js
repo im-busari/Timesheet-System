@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const get = {
-  allTimesheetsForUser: async ({ userId }) => {
-    const res = await axios.get(`/timesheets/user/${userId}`);
+  allTimesheetsForUser: async () => {
+    const res = await axios.get(`/timesheets/user/`);
     return res.data;
   },
 
