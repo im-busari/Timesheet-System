@@ -6,9 +6,9 @@ module.exports = (sequelize, DataTypes) => {
             Project.hasMany(models.TimesheetEntry, {
                 foreignKey: 'projectId',
             });
-            Project.hasMany(models.Task, {
-                foreignKey: 'projectId',
-                through: 'ProjectsTasks',
+            this.Task = Project.belongsToMany(models.Task, {
+                foreignKey: 'taskId',
+                through: 'ProjectsTasks'
             });
         }
     }
