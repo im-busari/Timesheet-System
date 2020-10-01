@@ -3,7 +3,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Timesheet extends Model {
     static associate(models) {
-      this.TimesheetEntry = Timesheet.belongsToMany(models.TimesheetEntry, {
+      Timesheet.hasMany(models.TimesheetEntry, {
         foreignKey: 'timesheetId',
       });
     }

@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface) => {
-    return await queryInterface.bulkInsert('Timesheets', [
+    return await queryInterface.bulkInsert('TimesheetEntries', [
       {
         id: 'cae71929-0f6a-41a8-9f5f-4b63c6f7ec7c',
         timesheetId: 'b99eecc9-7e59-49db-b866-7f46b5bff2ee',
@@ -30,12 +30,7 @@ module.exports = {
     ]);
   },
 
-  down: async (queryInterface, Sequelize) => {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+  down: async (queryInterface) => {
+    return await queryInterface.bulkDelete('TimesheetEntries', null, {});
   },
 };

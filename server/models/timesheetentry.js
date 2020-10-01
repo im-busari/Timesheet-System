@@ -2,7 +2,11 @@
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class TimesheetEntry extends Model {
-    static associate(models) {}
+    static associate(models) {
+      this.Timesheet = TimesheetEntry.belongsTo(models.Timesheet, {
+        foreignKey: 'timesheetId',
+      });
+    }
   }
 
   TimesheetEntry.init(
