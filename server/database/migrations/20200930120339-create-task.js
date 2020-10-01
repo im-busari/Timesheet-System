@@ -12,9 +12,6 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
-      projectId: {
-        type: Sequelize.UUID
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
