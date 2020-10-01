@@ -1,13 +1,13 @@
 import React from "react";
 import "./App.css";
 import { Navigation } from "./components/Navigation";
-import { Title } from "./components/generic/Title";
+import { CreateTimesheet, EditTimesheet } from "./Pages";
 
 function App() {
   return (
     <>
       <Navigation />
-      <Title color="yellow" text="Sample Title"></Title>
+      <EditTimesheet />
     </>
   );
 }
