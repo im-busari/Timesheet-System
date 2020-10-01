@@ -10,6 +10,12 @@ module.exports = {
       },
       timesheetId: {
         type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'Timesheets',
+          },
+          key: 'id',
+        },
       },
       projectId: {
         type: Sequelize.UUID

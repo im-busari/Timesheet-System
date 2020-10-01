@@ -1,11 +1,11 @@
-const { Timesheet } = require('../models');
+const {Timesheet} = require('../models');
 const uuidValidator = require('../utils/validateUuid');
 
 class TimesheetController {
     async getTimesheetsByUserId(req, res) {
 
         // Checks if the id is valid
-        if(!uuidValidator(req.params.userId)) {
+        if (!uuidValidator(req.params.userId)) {
             res.status(404).send({error: 'Invalid user id!'});
             return;
         }
@@ -31,7 +31,7 @@ class TimesheetController {
     async getTimesheetById(req, res) {
 
         // Checks if the id is valid
-        if(!uuidValidator(req.params.id)) {
+        if (!uuidValidator(req.params.id)) {
             res.status(404).send({error: 'Invalid timesheet id!'});
             return;
         }
@@ -78,6 +78,15 @@ class TimesheetController {
 
         } catch (err) {
             res.status(403).json(err);
+        }
+    }
+
+    async updateTimesheetEntry(req, res) {
+        try {
+            // ...
+            await (1 + 1);
+        } catch (err) {
+            res.status(409).send({error: 'Already created!'});
         }
     }
 
