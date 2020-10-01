@@ -13,7 +13,18 @@ class TimesheetController {
             });
 
             if (timesheets.length !== 0) {
-                res.status(201).send(timesheets);
+                const result = [];
+
+                for (const timesheet in timesheets) {
+                    const tsh = timesheets[timesheet];
+                    const entries = await tsh.getTimesheetEntries();
+                    result.push({
+                        timesheet: tsh,
+                        entries: entries
+                    });
+                }
+
+                res.status(201).send(result);
             } else {
                 res.status(404).send({error: 'The user doesn\'t have any timesheets!'});
             }
@@ -34,8 +45,10 @@ class TimesheetController {
         try {
             const timesheet = await Timesheet.findByPk(req.params.id);
 
+            const entries = await timesheet.getTimesheetEntries();
+
             if (timesheet) {
-                res.status(201).send(timesheet);
+                res.status(201).send({timesheet, entries});
             } else {
                 res.status(404).send({error: 'Timesheet with the given id doesn\'t exist!'});
             }
@@ -48,6 +61,20 @@ class TimesheetController {
 
     async updateTimesheet(req, res) {
         try {
+
+            console.log('a')
+
+            const timesheet = Timesheet.findByPk(req.params.id);
+
+            console.log('b')
+
+            const timesheetEntry = await TimesheetEntry.findByPk('cae71929-0f6a-41a8-9f5f-4b63c6f7ec7c');
+
+            console.log('c')
+
+            // await timesheet.setTimehseetEntries(timesheetEntry);
+
+            console.log({entry: timesheetEntry, entries: await timesheet.getTimesheetEntries()});
 
         } catch (err) {
             res.status(403).json(err);
