@@ -5,6 +5,6 @@ const TimesheetController = require('../controllers/TimesheetController');
 router.get('/user/:userId', TimesheetController.getTimesheetsByUserId);
 router.get('/:id', TimesheetController.getTimesheetById);
 router.post('/', TimesheetController.createTimesheet);
-router.delete('/', TimesheetController.deleteTimesheet);
+router.delete('/:id', TimesheetController.deleteTimesheet);
 
 module.exports = router;
