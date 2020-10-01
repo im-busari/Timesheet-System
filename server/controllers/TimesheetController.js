@@ -43,6 +43,7 @@ class TimesheetController {
         } catch (err) {
             res.status(403).json(err);
         }
+
     }
 
     async updateTimesheet(req, res) {
