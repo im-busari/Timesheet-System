@@ -6,9 +6,11 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import { LoginPage } from "./pages/Login";
-import { RegisterPage } from "./pages/Register";
+import { LoginPage } from "./Pages";
+import { RegisterPage } from "./Pages";
 import { Navigation } from "./components/Navigation";
+import { CreateTimesheet } from "./Pages";
+import { EditTimesheet } from "./Pages";
 
 export const AppRoutes = () => {
   const Home = () => {
@@ -19,9 +21,10 @@ export const AppRoutes = () => {
     <Router>
       <Navigation />
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path="/" component={EditTimesheet} />
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/register" component={RegisterPage} />
+        <Route exact path="/timesheets/create" component={CreateTimesheet} />
       </Switch>
     </Router>
   );
