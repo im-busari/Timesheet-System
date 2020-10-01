@@ -1,19 +1,14 @@
 const { Timesheet } = require('../models');
 const uuidValidator = require('../utils/validateUuid');
+const getUserId = require('../utils/getUserId');
 
 class TimesheetController {
     async getTimesheetsByUserId(req, res) {
 
-        // Checks if the id is valid
-        if(!uuidValidator(req.params.userId)) {
-            res.status(404).send({error: 'Invalid user id!'});
-            return;
-        }
-
         try {
             const timesheets = await Timesheet.findAll({
                 where: {
-                    userId: req.params.userId,
+                    userId: getUserId(),
                 }
             });
 
@@ -56,7 +51,7 @@ class TimesheetController {
             const allTimesheet = await Timesheet.findOne({
                 where: {
                     startDate: req.body.startDate,
-                    userId: req.body.userId,
+                    userId: getUserId(),
                 }
             });
 
@@ -66,7 +61,7 @@ class TimesheetController {
                 timesheet = await Timesheet.create({
                     status: 'Open',
                     startDate: req.body.startDate,
-                    userId: req.body.userId,
+                    userId: getUserId(),
                 });
             }
 
