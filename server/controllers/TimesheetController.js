@@ -1,4 +1,4 @@
-const { Timesheet, TimesheetEntry } = require('../models');
+const { Timesheet, TimesheetEntry, Day } = require('../models');
 const uuidValidator = require('../utils/validateUuid');
 const getUserId = require('../utils/getUserId');
 
@@ -38,13 +38,13 @@ class TimesheetController {
 
   async getTimesheetById(req, res) {
     // Checks if the id is valid
-    if (!uuidValidator(req.params.id)) {
+    if (!uuidValidator(req.params.timesheetId)) {
       res.status(404).send({ error: 'Invalid timesheet id!' });
       return;
     }
 
     try {
-      const timesheet = await Timesheet.findByPk(req.params.id);
+      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
       if (timesheet) {
         const result = [];
@@ -71,24 +71,67 @@ class TimesheetController {
 
   async updateTimesheet(req, res) {
     try {
-      console.log('a');
+      console.log('start update');
 
-      const timesheet = Timesheet.findByPk(req.params.id);
+      const entries = req.body.entries;
+      // console.log(`Number of entries: ${numOfEntries}`);
 
-      console.log('b');
+      for (const entry of entries) {
+        // if new => entry.id === null
+        if (!entry.id) {
+          const newTimesheetEntry = await TimesheetEntry.create({
+            timesheetId: entry.timesheetId,
+            projectId: entry.projectId,
+            taskId: entry.taskId,
+          });
+          if (entry.days) {
+            for (const index in entry.days) {
+              await Day.create({
+                timesheetEntryId: newTimesheetEntry.id,
+                date: entry.days[index].date,
+                hours: entry.days[index].hours,
+              });
+            }
+          }
+          res.send({ newTimesheetEntry });
+        } else {
+          const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
+          if (entry.projectId !== updateTimesheetEntry.projectId) {
+            updateTimesheetEntry.projectId = entry.projectId;
+          }
+          if (entry.taskId !== updateTimesheetEntry.taskId) {
+            updateTimesheetEntry.taskId = entry.taskId;
+          }
+          await updateTimesheetEntry.save();
 
-      const timesheetEntry = await TimesheetEntry.findByPk(
-        'cae71929-0f6a-41a8-9f5f-4b63c6f7ec7c'
-      );
-
-      console.log('c');
-
-      // await timesheet.setTimehseetEntries(timesheetEntry);
-
-      console.log({
-        entry: timesheetEntry,
-        entries: await timesheet.getTimesheetEntries(),
-      });
+          if (entry.days) {
+            // get current timesheetEntry days and check for id
+            for (const index in entry.days) {
+              if (entry.days[index].id) {
+                const updateDay = await Day.findByPk(entry.days[index].id);
+                // check if stored information is different from req.body.entries.day[index]
+                if (entry.days[index].date !== updateDay.date) {
+                  updateDay.date = entry.days[index].date;
+                }
+                if (entry.days[index].hours !== updateDay.hours) {
+                  updateDay.hours = entry.days[index].hours;
+                }
+                // save changes inside DB
+                await updateDay.save();
+              } else {
+                //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
+                await Day.create({
+                  timesheetEntryId: entry.id,
+                  date: entry.days[index].date,
+                  hours: entry.days[index].hours,
+                });
+              }
+            }
+          }
+          res.send({ updateTimesheetEntry });
+        }
+      }
+      console.log('It works!');
     } catch (err) {
       res.status(403).json(err);
     }
@@ -133,7 +176,7 @@ class TimesheetController {
 
   async deleteTimesheet(req, res) {
     // Checks if the id is valid
-    if (!uuidValidator(req.params.id)) {
+    if (!uuidValidator(req.params.timesheetId)) {
       res.status(404).send({ error: 'Invalid timesheet id!' });
       return;
     }
@@ -158,6 +201,16 @@ class TimesheetController {
       }
     } catch (err) {
       res.status(403).json(err);
+    }
+  }
+
+  async getTimesheetEntryDays(req, res) {
+    try {
+      const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
+      const days = await entry.getDays();
+      res.status(200).send({ entry, days });
+    } catch (err) {
+      res.status(500).send({ error: err });
     }
   }
 }
