@@ -1,126 +1,141 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   MainContainer,
-  OddRow,
-  EvenRow,
-  StyledCol,
-  StyledInput,
+  Header,
+  Information,
+  WeekInfo,
+  UserInfo,
+  BtnsContainer,
 } from "./EditTimesheetStyledComponents";
-import { Container, Row, Col } from "react-bootstrap";
-import { format } from "date-fns";
-import { BsTrash2Fill } from "react-icons/bs";
-import { Head } from "./Head";
+import { Button } from "../../components/generic/Button";
+import { Container } from "react-bootstrap";
+import { TableHeader } from "./TableHeader";
+import { TableFooter } from "./TableFooter";
+import { Entry } from "./Entry";
+import uuid from "react-uuid";
 
 export const EditTimesheet = () => {
-  const date = new Date();
+  const [entries, setEntries] = useState([
+    {
+      id: uuid(),
+      project: null,
+      task: null,
+      mon: 0,
+      tue: 0,
+      wed: 0,
+      thu: 0,
+      fri: 0,
+      sat: 0,
+      sun: 0,
+    },
+  ]);
+
+  const addEmptyEntry = (event, entryId) => {
+    event.persist();
+
+    entries.forEach((entry) => {
+      if (entry.id === entryId && entry.project === null) {
+        setEntries((prevState) => {
+          return [
+            ...prevState,
+            {
+              id: uuid(),
+              project: null,
+              task: null,
+              mon: 0,
+              tue: 0,
+              wed: 0,
+              thu: 0,
+              fri: 0,
+              sat: 0,
+              sun: 0,
+            },
+          ];
+        });
+      }
+    });
+  };
+
+  const handleChange = (event, entryId) => {
+    const { id, value } = event.target;
+
+    /* Handles the change of a project */
+    if (id === "project") {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            return { ...entry, project: event.target.value };
+          } else {
+            return entry;
+          }
+        });
+      });
+      /* Handles the change of a task */
+    } else if (id === "task") {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            return { ...entry, task: event.target.value };
+          } else {
+            return entry;
+          }
+        });
+      });
+      /* Handles the change of work hours */
+    } else {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            if (!isNaN(parseInt(value))) {
+              return { ...entry, [id]: parseInt(value) };
+            } else {
+              return { ...entry, [id]: 0 };
+            }
+          } else {
+            return entry;
+          }
+        });
+      });
+    }
+  };
+
+  const handleEntryDelete = (entryId) => {
+    if (entries.length > 1) {
+      setEntries((prevState) =>
+        prevState.filter((entry) => entry.id !== entryId)
+      );
+    }
+  };
 
   return (
     <MainContainer>
+      <Header>
+        <Information>
+          <WeekInfo>{`Timesheet for week ___`}</WeekInfo>
+          <UserInfo>{`User: ___`}</UserInfo>
+        </Information>
+
+        <BtnsContainer>
+          <Button backgroundColor="danger" text="Delete" />
+          <Button backgroundColor="orange" text="Save" />
+          <Button backgroundColor="green" text="Submit" />
+        </BtnsContainer>
+      </Header>
+
       <Container fluid>
-        <Row as={OddRow} style={{ minWidht: "1200px" }}>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
-            Project
-          </Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
-            Task
-          </Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>{`${format(date, "EEE")}\n${format(
-            date,
-            "dd.MM"
-          )}`}</Col>
-          <Col as={StyledCol}>Total</Col>
-        </Row>
+        <TableHeader />
 
-        <Row as={EvenRow} style={{ minWidht: "1200px" }}>
-          <Col as={StyledCol}>
-            <BsTrash2Fill />
-          </Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
-            <select>
-              <option selected disabled hidden>
-                Choose project...
-              </option>
-              <option>Project One</option>
-              <option>Project Two</option>
-              <option>Project Three</option>
-            </select>
-          </Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
-            <select>
-              <option selected disabled hidden>
-                Choose task...
-              </option>
-              <option>Task One</option>
-              <option>Task Two</option>
-              <option>Task Three</option>
-            </select>
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-          <Col as={StyledCol}>
-            <StyledInput />
-          </Col>
-        </Row>
+        {entries.map((entry) => (
+          <Entry
+            key={entry.id}
+            entryId={entry.id}
+            addEmptyEntry={addEmptyEntry}
+            handleChange={handleChange}
+            handleEntryDelete={handleEntryDelete}
+          />
+        ))}
 
-        <Row as={OddRow} style={{ minWidht: "1200px" }}>
-          <Col as={StyledCol}>
-            <BsTrash2Fill />
-          </Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}></Col>
-          <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-          <Col as={StyledCol}></Col>
-        </Row>
+        <TableFooter entries={entries} />
       </Container>
     </MainContainer>
   );
