@@ -8,6 +8,7 @@ export const StyledNav = styled(Nav)`
   align-items: center;
   background-color: var(--blue);
   padding: 1rem;
+  height: 5vh;
 `;
 export const MainContainer = styled.div`
   display: flex;
