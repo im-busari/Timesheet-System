@@ -10,7 +10,6 @@ const constants = require('./config/env');
 const db = require('./models/index');
 const server = express();
 const PORT = constants.PORT || 4000;
-const isAuth = require('./middlewares/isAuth');
 
 //  Logging requests
 let accessLogStream = rfs.createStream('access.log', {
@@ -61,7 +60,8 @@ server.get('/', (req, res) => {
 
 server.use('/example', require('./routes/example'));
 server.use('/users', require('./routes/users'));
-server.use('/timesheets', require('./routes/timesheet'));
+server.use('/timesheets', require('./routes/timesheets'));
+server.use('/projects', require('./routes/projects'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
 
