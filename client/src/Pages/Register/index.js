@@ -3,6 +3,7 @@ import { AuthForm } from "../../components/AuthForm";
 import { registerValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
+import { post } from "../../api/user";
 
 export const RegisterPage = () => {
   const fields = [
@@ -37,7 +38,7 @@ export const RegisterPage = () => {
   ];
 
   const handleSubmit = () => {
-    console.log("Registering");
+    post.register();
   };
 
   return (

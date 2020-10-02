@@ -3,6 +3,7 @@ import { AuthForm } from "../../components/AuthForm";
 import { loginValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
+import { post } from "../../api/user";
 
 export const LoginPage = () => {
   const fields = [
@@ -23,7 +24,7 @@ export const LoginPage = () => {
   ];
 
   const handleSubmit = () => {
-    console.log("logging in");
+    post.login();
   };
 
   return (
