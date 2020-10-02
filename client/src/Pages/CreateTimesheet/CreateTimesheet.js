@@ -56,8 +56,8 @@ export const CreateTimesheet = () => {
 
       <SubContainer>
         <form onSubmit={handleSubmit}>
-          <StyledSelect onChange={handleChange}>
-            <option selected disabled hidden>
+          <StyledSelect defaultValue onChange={handleChange}>
+            <option disabled hidden>
               Choose week...
             </option>
             <option value={`${previousWeek.mon}`}>
