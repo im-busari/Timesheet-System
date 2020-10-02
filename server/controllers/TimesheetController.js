@@ -73,10 +73,6 @@ class TimesheetController {
     try {
       console.log('start update');
 
-      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
-
-      console.log('loop through entries');
-
       const entries = req.body.entries;
       // console.log(`Number of entries: ${numOfEntries}`);
 
@@ -88,46 +84,54 @@ class TimesheetController {
             projectId: entry.projectId,
             taskId: entry.taskId,
           });
-          console.log(newTimesheetEntry.id);
-          const days = [];
           if (entry.days) {
-            for (const workDay in entry.days) {
-              const newDay = await Day.create({
+            for (const index in entry.days) {
+              await Day.create({
                 timesheetEntryId: newTimesheetEntry.id,
-                date: entry.days[workDay].date,
-                hours: entry.days[workDay].hours,
+                date: entry.days[index].date,
+                hours: entry.days[index].hours,
               });
-              days.push(newDay);
             }
           }
-          res.send({ newTimesheetEntry, days });
+          res.send({ newTimesheetEntry });
         } else {
-          const updateTimesheetEntry = await TimesheetEntry.create(
-            {
-              status: 'Open',
-              startDate: req.body.startDate,
-              userId: getUserId(req),
-            },
-            {
-              includes: {
-                userId: getUserId(req),
-              },
+          const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
+          if (entry.projectId !== updateTimesheetEntry.projectId) {
+            updateTimesheetEntry.projectId = entry.projectId;
+          }
+          if (entry.taskId !== updateTimesheetEntry.taskId) {
+            updateTimesheetEntry.taskId = entry.taskId;
+          }
+          await updateTimesheetEntry.save();
+
+          if (entry.days) {
+            // get current timesheetEntry days and check for id
+            for (const index in entry.days) {
+              if (entry.days[index].id) {
+                const updateDay = await Day.findByPk(entry.days[index].id);
+                // check if stored information is different from req.body.entries.day[index]
+                if (entry.days[index].date !== updateDay.date) {
+                  updateDay.date = entry.days[index].date;
+                }
+                if (entry.days[index].hours !== updateDay.hours) {
+                  updateDay.hours = entry.days[index].hours;
+                }
+                // save changes inside DB
+                await updateDay.save();
+              } else {
+                //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
+                await Day.create({
+                  timesheetEntryId: entry.id,
+                  date: entry.days[index].date,
+                  hours: entry.days[index].hours,
+                });
+              }
             }
-          );
+          }
+          res.send({ updateTimesheetEntry });
         }
-        //  if entry.id === sth;
       }
-
-      const timesheetEntry = await TimesheetEntry.findByPk(
-        'cae71929-0f6a-41a8-9f5f-4b63c6f7ec7c'
-      );
-
-      // await timesheet.setTimehseetEntries(timesheetEntry);
-
-      // console.log({
-      //   entry: timesheetEntry,
-      //   entries: await timesheet.getTimesheetEntries(),
-      // });
+      console.log('It works!');
     } catch (err) {
       res.status(403).json(err);
     }
