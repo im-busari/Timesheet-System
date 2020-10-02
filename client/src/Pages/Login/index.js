@@ -42,7 +42,6 @@ export const LoginPage = () => {
           fields={fields}
           initialValues={{ email: "", password: "" }}
           onSubmit={loginUser}
-          validationSchema={loginValidation}
         />
       </div>
     </Layout>

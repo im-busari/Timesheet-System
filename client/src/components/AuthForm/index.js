@@ -25,10 +25,12 @@ export const AuthForm = ({
           <FormStyled>
             {fields.map((field, index) => {
               const { name, type, placeholder, autoComplete, label } = field;
+              const shouldValidate = !!validationSchema;
 
               return (
                 <Field
                   as={FormInput}
+                  shouldValidate={shouldValidate}
                   touched={touched[name]}
                   errors={errors[name]}
                   key={index}

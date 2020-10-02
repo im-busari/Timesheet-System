@@ -15,7 +15,7 @@ export const registerValidation = yup.object({
 
   username: yup
     .string()
-    .min(3, "Your username must be a minimum of 3 characters")
+    .min(6, "Your username must be a minimum of 3 characters")
     .required("Please enter a username"),
 
   password: yup
