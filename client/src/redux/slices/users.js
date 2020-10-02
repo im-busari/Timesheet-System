@@ -15,8 +15,6 @@ const { reducer, actions } = createSlice({
   },
   extraReducers: {
     [authActions.setUser]: populateUser,
-    // [timesheetActions.fetch]: populateUser,
-    // [timesheetActions.create]: populateUser,
   },
 });
 
