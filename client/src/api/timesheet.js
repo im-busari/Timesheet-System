@@ -22,6 +22,16 @@ export const post = {
   },
 };
 
+export const patch = {
+  update: async ({ timesheetId, entries }) => {
+    const res = await axios.patch(`/timesheets/${timesheetId}`, {
+      entries,
+    });
+
+    return res.data;
+  },
+};
+
 export const del = {
   delete: async ({ timesheetId }) => {
     const res = await axios.delete(`/timesheets/${timesheetId}`);
