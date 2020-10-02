@@ -15,14 +15,11 @@ export const CreateTimesheet = () => {
 
   const handleChange = (e) => {
     setMonday(e.target.value);
-    console.log("change", e.target.value);
   };
 
   const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("yo");
-    console.log("monday", monday);
 
     if (monday === "") {
       return;

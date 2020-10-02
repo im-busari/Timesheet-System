@@ -75,7 +75,6 @@ export const createTimesheet = ({ startDate }) => {
       const newTimesheet = { data: newTimesheetRaw, entries: [] };
 
       dispatch(actions.create(newTimesheet));
-      console.log("new", newTimesheet);
     } catch (error) {
       dispatch(actions.createError(error.message));
     }
