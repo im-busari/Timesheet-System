@@ -39,7 +39,7 @@ server.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      expires: 600000,
+      expires: 24 * 60 * 60 * 1000,
     },
   })
 );
