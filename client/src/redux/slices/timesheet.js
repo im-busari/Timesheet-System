@@ -5,6 +5,7 @@ const initialState = {
   timesheets: {},
   getError: null,
   createError: null,
+  updateError: null,
 };
 
 const { reducer, actions } = createSlice({
@@ -40,6 +41,14 @@ const { reducer, actions } = createSlice({
     },
     createError: (state, action) => {
       return { ...state, createError: action.payload };
+    },
+    update: (state, action) => {
+      const timesheetId = action.payload.data.id;
+
+      state.timesheets[timesheetId] = action.payload;
+    },
+    updateError: (state, action) => {
+      return { ...state, updateError: action.payload };
     },
     delete: (state, action) => {
       const timesheetId = action.payload;
@@ -77,6 +86,21 @@ export const createTimesheet = ({ startDate }) => {
       dispatch(actions.create(newTimesheet));
     } catch (error) {
       dispatch(actions.createError(error.message));
+    }
+  };
+};
+
+export const updateTimesheet = ({ id, entries }) => {
+  return async (dispatch) => {
+    try {
+      const updatedTimesheet = await timesheet.patch.update({
+        timesheetId: id,
+        entries,
+      });
+
+      dispatch(actions.update(updatedTimesheet));
+    } catch (error) {
+      dispatch(actions.updateError(error.message));
     }
   };
 };
