@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  // Redirect,
 } from "react-router-dom";
 
 import { LoginPage } from "./Pages";
@@ -13,9 +13,9 @@ import { CreateTimesheet } from "./Pages";
 import { EditTimesheet } from "./Pages";
 
 export const AppRoutes = () => {
-  const Home = () => {
-    return <div>Yo</div>;
-  };
+  // const Home = () => {
+  //   return <div>Yo</div>;
+  // };
 
   return (
     <Router>
