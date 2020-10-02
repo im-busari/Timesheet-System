@@ -61,6 +61,8 @@ server.get('/', (req, res) => {
 server.use('/example', require('./routes/example'));
 server.use('/users', require('./routes/users'));
 server.use('/timesheets', require('./routes/timesheets'));
+server.use('/timesheetEntries', require('./routes/timesheetEntry'));
+server.use('/projects', require('./routes/projects'));
 
 console.log(`Your SERVER: ${process.env.NODE_ENV}`);
 
