@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const get = {
   currentUser: async () => {
-    const res = await axios.post("/users/me");
+    const res = await axios.get("/users/me");
     return res.data;
   },
 };
@@ -15,7 +15,7 @@ export const post = {
       password,
     });
 
-    return res.data;
+    return res.data.user;
   },
 
   login: async ({ email, password }) => {
@@ -24,7 +24,7 @@ export const post = {
       password,
     });
 
-    return res.data;
+    return res.data.user;
   },
 
   logout: async () => {
