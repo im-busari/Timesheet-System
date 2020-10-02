@@ -1,10 +1,12 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { authReducer } from "./slices/auth";
 import { userReducer } from "./slices/users";
+import { timesheetReducer } from "./slices/timesheet";
 
 const appReducer = combineReducers({
   auth: authReducer,
   users: userReducer,
+  timesheets: timesheetReducer,
 });
 
 // This wrapper allows for a full-state wipe, when auth/logout
