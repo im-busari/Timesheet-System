@@ -1,4 +1,4 @@
-const { Timesheet, TimesheetEntry } = require('../models');
+const { Timesheet, TimesheetEntry, Day } = require('../models');
 const uuidValidator = require('../utils/validateUuid');
 const getUserId = require('../utils/getUserId');
 
@@ -38,13 +38,13 @@ class TimesheetController {
 
   async getTimesheetById(req, res) {
     // Checks if the id is valid
-    if (!uuidValidator(req.params.id)) {
+    if (!uuidValidator(req.params.timesheetId)) {
       res.status(404).send({ error: 'Invalid timesheet id!' });
       return;
     }
 
     try {
-      const timesheet = await Timesheet.findByPk(req.params.id);
+      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
       if (timesheet) {
         const result = [];
@@ -71,24 +71,63 @@ class TimesheetController {
 
   async updateTimesheet(req, res) {
     try {
-      console.log('a');
+      console.log('start update');
 
-      const timesheet = Timesheet.findByPk(req.params.id);
+      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
-      console.log('b');
+      console.log('loop through entries');
+
+      const entries = req.body.entries;
+      // console.log(`Number of entries: ${numOfEntries}`);
+
+      for (const entry of entries) {
+        // if new => entry.id === null
+        if (!entry.id) {
+          const newTimesheetEntry = await TimesheetEntry.create({
+            timesheetId: entry.timesheetId,
+            projectId: entry.projectId,
+            taskId: entry.taskId,
+          });
+          console.log(newTimesheetEntry.id);
+          const days = [];
+          if (entry.days) {
+            for (const workDay in entry.days) {
+              const newDay = await Day.create({
+                timesheetEntryId: newTimesheetEntry.id,
+                date: entry.days[workDay].date,
+                hours: entry.days[workDay].hours,
+              });
+              days.push(newDay);
+            }
+          }
+          res.send({ newTimesheetEntry, days });
+        } else {
+          const updateTimesheetEntry = await TimesheetEntry.create(
+            {
+              status: 'Open',
+              startDate: req.body.startDate,
+              userId: getUserId(req),
+            },
+            {
+              includes: {
+                userId: getUserId(req),
+              },
+            }
+          );
+        }
+        //  if entry.id === sth;
+      }
 
       const timesheetEntry = await TimesheetEntry.findByPk(
         'cae71929-0f6a-41a8-9f5f-4b63c6f7ec7c'
       );
 
-      console.log('c');
-
       // await timesheet.setTimehseetEntries(timesheetEntry);
 
-      console.log({
-        entry: timesheetEntry,
-        entries: await timesheet.getTimesheetEntries(),
-      });
+      // console.log({
+      //   entry: timesheetEntry,
+      //   entries: await timesheet.getTimesheetEntries(),
+      // });
     } catch (err) {
       res.status(403).json(err);
     }
@@ -133,7 +172,7 @@ class TimesheetController {
 
   async deleteTimesheet(req, res) {
     // Checks if the id is valid
-    if (!uuidValidator(req.params.id)) {
+    if (!uuidValidator(req.params.timesheetId)) {
       res.status(404).send({ error: 'Invalid timesheet id!' });
       return;
     }
@@ -158,6 +197,16 @@ class TimesheetController {
       }
     } catch (err) {
       res.status(403).json(err);
+    }
+  }
+
+  async getTimesheetEntryDays(req, res) {
+    try {
+      const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
+      const days = await entry.getDays();
+      res.status(200).send({ entry, days });
+    } catch (err) {
+      res.status(500).send({ error: err });
     }
   }
 }
