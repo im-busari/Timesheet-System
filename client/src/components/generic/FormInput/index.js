@@ -8,6 +8,7 @@ export const FormInput = ({
   touched,
   errors,
   validation,
+  shouldValidate,
   ...rest
 }) => {
   const error = touched && errors && (
@@ -18,8 +19,8 @@ export const FormInput = ({
     <Form.Group>
       <Form.Label>{label}</Form.Label>
       <Form.Control
-        isValid={touched && !errors}
-        isInvalid={touched && errors}
+        isValid={shouldValidate ? touched && !errors : null}
+        isInvalid={shouldValidate ? touched && errors : null}
         type={type}
         placeholder={placeholder}
         {...rest}
