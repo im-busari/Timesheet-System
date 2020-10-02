@@ -14,6 +14,7 @@ const { reducer, actions } = createSlice({
     setUser: (state, action) => ({
       ...state,
       userId: action.payload.id,
+      error: null,
     }),
     setUserFail: (state, action) => {
       return { ...state, error: action.payload, userId: null };
