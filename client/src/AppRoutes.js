@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  // Redirect,
 } from "react-router-dom";
 
 import { LoginPage } from "./Pages";
@@ -13,16 +13,32 @@ import { AllTimesheetsPage } from "./Pages";
 import { CreateTimesheet } from "./Pages";
 import { EditTimesheet } from "./Pages";
 
+import { useSelector } from "react-redux";
+
 export const AppRoutes = () => {
+  const currentUserId = useSelector((state) => state.auth?.userId);
+  const guestRedirect = <Redirect to="/login" />;
+  const authRedirect = <Redirect to="/" />;
+
   return (
     <Router>
       <Navigation />
       <Switch>
-        <Route exact path="/" component={AllTimesheetsPage} />
-        <Route exact path="/timesheets/edit" component={EditTimesheet} />
-        <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/register" component={RegisterPage} />
-        <Route exact path="/timesheets/create" component={CreateTimesheet} />
+        <Route exact path="/">
+          {currentUserId ? <AllTimesheetsPage /> : guestRedirect}
+        </Route>
+        <Route exact path="/timesheets/edit">
+          {currentUserId ? <EditTimesheet /> : guestRedirect}
+        </Route>
+        <Route exact path="/timesheets/create">
+          {currentUserId ? <CreateTimesheet /> : guestRedirect}
+        </Route>
+        <Route exact path="/login">
+          {currentUserId ? authRedirect : <LoginPage />}
+        </Route>
+        <Route exact path="/register">
+          {currentUserId ? authRedirect : <RegisterPage />}
+        </Route>
       </Switch>
     </Router>
   );

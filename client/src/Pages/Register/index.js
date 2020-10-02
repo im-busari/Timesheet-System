@@ -3,6 +3,9 @@ import { AuthForm } from "../../components/AuthForm";
 import { registerValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
+import { post } from "../../api/user";
+import { useDispatch } from "react-redux";
+import { register } from "../../redux/slices/auth";
 
 export const RegisterPage = () => {
   const fields = [
@@ -36,8 +39,11 @@ export const RegisterPage = () => {
     },
   ];
 
-  const handleSubmit = () => {
-    console.log("Registering");
+  const dispatch = useDispatch();
+  const registerUser = async (values, actions) => {
+    const { email, username, password } = values;
+    await register({ email, username, password })(dispatch);
+    actions.setSubmitting(false);
   };
 
   return (
@@ -53,7 +59,7 @@ export const RegisterPage = () => {
             password: "",
             rePassword: "",
           }}
-          onSubmit={handleSubmit}
+          onSubmit={registerUser}
           validationSchema={registerValidation}
         />
       </div>

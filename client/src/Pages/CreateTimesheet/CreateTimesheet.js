@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   MainContainer,
   SubContainer,
@@ -7,6 +7,8 @@ import {
 } from "./CreateTimesheetStyledComponents";
 import { Title } from "../../components/generic/Title";
 import { startOfWeek, subWeeks, addWeeks, format, endOfWeek } from "date-fns";
+import { useDispatch } from "react-redux";
+import { createTimesheet } from "../../redux/slices/timesheet";
 
 export const CreateTimesheet = () => {
   const [monday, setMonday] = useState("");
@@ -15,16 +17,16 @@ export const CreateTimesheet = () => {
     setMonday(e.target.value);
   };
 
+  const dispatch = useDispatch();
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (monday === "") {
       return;
     }
-  };
 
-  /* Reset the state on unmount */
-  useEffect(() => () => setMonday(""));
+    dispatch(createTimesheet({ startDate: monday }));
+  };
 
   /* Mondays for the available timesheets */
   const currentMonday = startOfWeek(new Date(), { weekStartsOn: 1 });
@@ -56,8 +58,8 @@ export const CreateTimesheet = () => {
 
       <SubContainer>
         <form onSubmit={handleSubmit}>
-          <StyledSelect onChange={handleChange}>
-            <option selected disabled hidden>
+          <StyledSelect defaultValue onChange={handleChange}>
+            <option disabled hidden>
               Choose week...
             </option>
             <option value={`${previousWeek.mon}`}>
@@ -74,7 +76,7 @@ export const CreateTimesheet = () => {
             </option>
           </StyledSelect>
 
-          <SubmitButton>Create</SubmitButton>
+          <SubmitButton type="submit">Create</SubmitButton>
         </form>
       </SubContainer>
     </MainContainer>
