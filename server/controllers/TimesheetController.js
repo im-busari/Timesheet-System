@@ -13,11 +13,20 @@ class TimesheetController {
 
       if (timesheets.length !== 0) {
         const result = [];
+        const entries = [];
 
         for (const timesheet in timesheets) {
           const element = {};
           const current = timesheets[timesheet];
-          const entries = await current.getTimesheetEntries();
+          const entriesResult = await current.getTimesheetEntries();
+
+          for (const index in entriesResult) {
+            const entryFromDB = await TimesheetEntry.findByPk(
+              entriesResult[index].id
+            );
+            const daysForEntry = await entryFromDB.getDays();
+            entries.push({ data: entriesResult[index], days: daysForEntry });
+          }
 
           element.data = current;
           element.entries = entries;
