@@ -8,7 +8,7 @@ import {
 } from "./NavigationStyledComponents";
 import { Logo } from "../generic/Logo";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../redux/slices/user";
+import { logout } from "../../redux/slices/auth";
 
 export const Navigation = () => {
   const dispatch = useDispatch();
@@ -16,7 +16,7 @@ export const Navigation = () => {
     dispatch(logout());
   };
 
-  const userId = useSelector((state) => state.user.user?.id);
+  const userId = useSelector((state) => state.auth?.userId);
 
   return (
     <StyledNav>

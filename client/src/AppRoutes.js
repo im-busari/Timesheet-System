@@ -16,7 +16,7 @@ import { EditTimesheet } from "./Pages";
 import { useSelector } from "react-redux";
 
 export const AppRoutes = () => {
-  const currentUserId = useSelector((state) => state.user?.user?.id);
+  const currentUserId = useSelector((state) => state.auth?.userId);
   const guestRedirect = <Redirect to="/login" />;
   const authRedirect = <Redirect to="/" />;
 

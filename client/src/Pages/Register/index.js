@@ -5,7 +5,7 @@ import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
 import { post } from "../../api/user";
 import { useDispatch } from "react-redux";
-import { register } from "../../redux/slices/user";
+import { register } from "../../redux/slices/auth";
 
 export const RegisterPage = () => {
   const fields = [

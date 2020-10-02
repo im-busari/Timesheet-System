@@ -1,8 +1,8 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { user } from "../../api";
 
 const initialState = {
-  user: null,
+  userId: null,
   error: null,
   isSessionChecked: false,
 };
@@ -13,10 +13,10 @@ const { reducer, actions } = createSlice({
   reducers: {
     setUser: (state, action) => ({
       ...state,
-      user: action.payload,
+      userId: action.payload.id,
     }),
     setUserFail: (state, action) => {
-      return { ...state, error: action.payload, user: null };
+      return { ...state, error: action.payload, userId: null };
     },
     checkSession: (state) => ({ ...state, isSessionChecked: true }),
     logout: () => {
@@ -25,7 +25,7 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { reducer as userReducer, actions as userActions };
+export { reducer as authReducer, actions as authActions };
 
 export const login = ({ email, password }) => {
   return async (dispatch) => {

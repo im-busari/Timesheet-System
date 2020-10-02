@@ -4,7 +4,7 @@ import { loginValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
 import { useDispatch } from "react-redux";
-import { login } from "../../redux/slices/user";
+import { login } from "../../redux/slices/auth";
 import { useHistory } from "react-router-dom";
 
 export const LoginPage = () => {

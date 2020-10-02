@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 
 function App() {
   useCheckSession();
-  const isSessionChecked = useSelector((state) => state.user.isSessionChecked);
+  const isSessionChecked = useSelector((state) => state.auth.isSessionChecked);
 
   if (!isSessionChecked) {
     return null;
