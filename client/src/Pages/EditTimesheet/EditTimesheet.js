@@ -13,7 +13,6 @@ import { Head } from "./Head";
 
 export const EditTimesheet = () => {
   const date = new Date();
-  console.log(format(date, "dd-MM"));
 
   return (
     <MainContainer>

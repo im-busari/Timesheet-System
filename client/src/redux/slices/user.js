@@ -60,7 +60,6 @@ export const checkSession = () => {
   return async (dispatch) => {
     try {
       const currentUser = await user.get.currentUser();
-      console.log("user", currentUser);
       dispatch(actions.setUser(currentUser));
       dispatch(actions.checkSession());
     } catch (error) {

@@ -11,7 +11,6 @@ export const TimesheetPreviewListItem = ({
   onDelete,
 }) => {
   const isSubmitted = status === "Submitted";
-  console.log(startDate);
   const startDateFormatted = formatDate(new Date(startDate), "dd-MM");
   const endDate = formatDate(addWeeks(new Date(startDate), 1), "dd-MM");
 
