@@ -62,6 +62,9 @@ const { reducer, actions } = createSlice({
     deleteError: (state, action) => {
       return { ...state, deleteError: action.payload };
     },
+    clearCurrent: (state) => {
+      return { ...state, currentTimesheetId: null };
+    },
   },
 });
 
@@ -115,5 +118,11 @@ export const deleteTimesheet = ({ id }) => {
     } catch (error) {
       dispatch(actions.deleteError(error.message));
     }
+  };
+};
+
+export const clearCurrentTimesheet = () => {
+  return (dispatch) => {
+    dispatch(actions.clearCurrent());
   };
 };

@@ -37,7 +37,11 @@ export const Navigation = () => {
           </StyledNavItem>
         </MainContainer>
       ) : (
-        <MainContainer />
+        <MainContainer>
+          <StyledLink to="/">
+            <Logo />
+          </StyledLink>
+        </MainContainer>
       )}
 
       <MainContainer>

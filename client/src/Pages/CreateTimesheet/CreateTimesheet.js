@@ -32,14 +32,14 @@ export const CreateTimesheet = () => {
     }
   }, [createdTimesheet]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (monday === "") {
       return;
     }
 
-    await createTimesheet({ startDate: monday })(dispatch);
+    dispatch(createTimesheet({ startDate: monday }));
   };
 
   /* Mondays for the available timesheets */

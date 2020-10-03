@@ -194,11 +194,30 @@ class TimesheetController {
     }
   }
 
-  async deleteTimesheet(req, res) {
-    // Checks if the id is valid
-    if (!uuidValidator(req.params.timesheetId)) {
-      res.status(404).send({ error: 'Invalid timesheet id!' });
-      return;
+    async deleteTimesheet(req, res) {
+        // Checks if the id is valid
+        if (!uuidValidator(req.params.timesheetId)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
+        try {
+            // Finds one by id.
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet) {
+                await Timesheet.destroy({
+                    where: {
+                        id: timesheet.id,
+                    },
+                });
+                res.status(201).send({success: 'Deleted successfully!'});
+            } else {
+                res.status(409).json({error: "Timesheet doesn't exist!"});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
     }
 
     try {

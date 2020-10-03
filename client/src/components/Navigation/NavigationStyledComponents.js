@@ -8,7 +8,7 @@ export const StyledNav = styled(Nav)`
   align-items: center;
   background-color: var(--blue);
   padding: 1rem;
-  height: 5vh;
+  height: auto;
 `;
 export const MainContainer = styled.div`
   display: flex;
@@ -26,6 +26,7 @@ export const Username = styled.div`
 `;
 export const StyledNavItem = styled(Nav.Item)`
   list-style-type: none;
+  font-size: 1.25rem;
   transition: transform 0.5s;
   :hover {
     transform: scale(1.125);
@@ -37,7 +38,9 @@ export const StyledNavLink = styled(Nav.Link)`
     color: var(--white);
   }
 `;
-
 export const StyledLink = styled(Link)`
-  margin-right: 1rem;
+  margin-right: 2rem;
+  :hover {
+    text-decoration: none;
+  }
 `;
