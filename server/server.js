@@ -29,7 +29,13 @@ server.use(
 );
 server.use(bodyParser.json());
 server.use(cookieParser());
-server.use(cors()); // TODO: Fix CORS
+
+server.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
 // initialize express-session to allow us track the logged-in user across sessions.
 server.use(
@@ -39,7 +45,7 @@ server.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      expires: 600000,
+      expires: 24 * 60 * 60 * 1000,
     },
   })
 );

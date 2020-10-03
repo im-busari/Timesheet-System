@@ -4,9 +4,9 @@ const TimesheetController = require('../controllers/TimesheetController');
 const isAuth = require('../middlewares/isAuth');
 
 router.get('/user', isAuth, TimesheetController.getTimesheetsByUserId);
-router.get('/:timesheetId', TimesheetController.getTimesheetById);
+router.get('/:timesheetId', isAuth, TimesheetController.getTimesheetById);
 router.post('/', isAuth, TimesheetController.createTimesheet);
-router.patch('/:timesheetId', TimesheetController.updateTimesheet); // TODO: put isAuth
+router.patch('/:timesheetId', isAuth, TimesheetController.updateTimesheet); // TODO: put isAuth
 router.delete('/:timesheetId', isAuth, TimesheetController.deleteTimesheet);
 
 //  Entries

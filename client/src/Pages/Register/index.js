@@ -42,7 +42,8 @@ export const RegisterPage = () => {
   const dispatch = useDispatch();
   const registerUser = async (values, actions) => {
     const { email, username, password } = values;
-    await register({ email, username, password })(dispatch);
+    // await register({ email, username, password })(dispatch);
+    dispatch(register({ email, username, password }));
     actions.setSubmitting(false);
   };
 
