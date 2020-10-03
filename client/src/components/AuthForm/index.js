@@ -3,6 +3,8 @@ import { Formik, Field } from "formik";
 import { FormInput } from "../generic/FormInput";
 import { Button } from "react-bootstrap";
 import { FormStyled, ButtonWrapper } from "./styles";
+import { useSelector } from "react-redux";
+import { DismissibleAlert } from "../../components/DismissibleAlert";
 
 export const AuthForm = ({
   fields,
@@ -11,6 +13,8 @@ export const AuthForm = ({
   onSubmit,
   validationSchema,
 }) => {
+  const error = useSelector((state) => state.auth.error);
+
   return (
     <Formik
       initialValues={initialValues}
@@ -23,6 +27,13 @@ export const AuthForm = ({
 
         return (
           <FormStyled>
+            {error?.includes("403") ? (
+              <DismissibleAlert
+                variant="danger"
+                alertText="Invalid credentials"
+              />
+            ) : null}
+
             {fields.map((field, index) => {
               const { name, type, placeholder, autoComplete, label } = field;
               const shouldValidate = !!validationSchema;
