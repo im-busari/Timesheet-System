@@ -4,14 +4,29 @@ import { BsTrash2Fill } from "react-icons/bs";
 import { StyledCol, EntryRow } from "./EditTimesheetStyledComponents";
 import { NumberInput } from "../../components/generic/NumberInput";
 import { DeleteBtn } from "./EditTimesheetStyledComponents";
+import { projects } from "../../api";
 
 export const Entry = ({
+  entry,
   entryId,
   handleChange,
   addEmptyEntry,
   handleEntryDelete,
 }) => {
   const [project, setProject] = useState(null);
+
+  // const { projectId } = entry.data
+  // const { taskId } = entry.data
+
+  // const getProjectNameAndTaskName = async (projectId, taskId) => {
+  //   const project = await projects.get.projectById(projectId)
+  //   const task = project.projects.tasks.filter(p => p.id === taskId)
+
+  //   return {
+  //     project: project.projects.name,
+  //     task: task[0].name
+  //   }
+  // }
 
   return (
     <Row as={EntryRow}>
@@ -32,7 +47,7 @@ export const Entry = ({
           }}
         >
           <option selected disabled hidden>
-            Choose project...
+            Enter project....
           </option>
           <option value="Project one">Project One</option>
           <option value="project two">Project Two</option>

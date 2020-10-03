@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MainContainer,
   Header,
@@ -13,8 +13,26 @@ import { TableHeader } from "./TableHeader";
 import { TableFooter } from "./TableFooter";
 import { Entry } from "./Entry";
 import uuid from "react-uuid";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getTimesheetsForUser } from "../../redux/slices/timesheet";
 
 export const EditTimesheet = () => {
+  const dispatch = useDispatch();
+  const loggedUserId = useSelector((state) => state.auth.userId);
+  const loggedUser = useSelector(
+    (state) => state.users.usersById[loggedUserId]
+  );
+
+  const { timesheetId } = useParams();
+  const currentTimesheet = useSelector(
+    (state) => state.timesheets.timesheets[timesheetId]
+  );
+
+  useEffect(() => {
+    dispatch(getTimesheetsForUser());
+  }, [dispatch]);
+
   const [entries, setEntries] = useState([
     {
       id: uuid(),
@@ -112,7 +130,7 @@ export const EditTimesheet = () => {
       <Header>
         <Information>
           <WeekInfo>{`Timesheet for week ___`}</WeekInfo>
-          <UserInfo>{`User: ___`}</UserInfo>
+          <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
         </Information>
 
         <BtnsContainer>
@@ -125,15 +143,17 @@ export const EditTimesheet = () => {
       <Container fluid>
         <TableHeader />
 
-        {entries.map((entry) => (
-          <Entry
-            key={entry.id}
-            entryId={entry.id}
-            addEmptyEntry={addEmptyEntry}
-            handleChange={handleChange}
-            handleEntryDelete={handleEntryDelete}
-          />
-        ))}
+        {currentTimesheet &&
+          currentTimesheet.entries.map((entry) => (
+            <Entry
+              key={entry.data.id}
+              entryId={entry.data.id}
+              entry={entry}
+              addEmptyEntry={addEmptyEntry}
+              handleChange={handleChange}
+              handleEntryDelete={handleEntryDelete}
+            />
+          ))}
 
         <TableFooter entries={entries} />
       </Container>
