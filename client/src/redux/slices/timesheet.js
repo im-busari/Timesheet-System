@@ -3,6 +3,7 @@ import { timesheet } from "../../api";
 
 const initialState = {
   timesheets: {},
+  currentTimesheetId: null,
   getError: null,
   createError: null,
   updateError: null,
@@ -38,6 +39,7 @@ const { reducer, actions } = createSlice({
       }
 
       state.createError = null;
+      state.currentTimesheetId = timesheetId;
     },
     createError: (state, action) => {
       return { ...state, createError: action.payload };

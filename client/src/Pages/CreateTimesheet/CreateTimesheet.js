@@ -7,10 +7,13 @@ import {
 } from "./CreateTimesheetStyledComponents";
 import { Title } from "../../components/generic/Title";
 import { startOfWeek, subWeeks, addWeeks, format, endOfWeek } from "date-fns";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createTimesheet } from "../../redux/slices/timesheet";
+import { useHistory } from "react-router-dom";
 
 export const CreateTimesheet = () => {
+  const history = useHistory();
+
   const [monday, setMonday] = useState("");
 
   const handleChange = (e) => {
@@ -18,14 +21,25 @@ export const CreateTimesheet = () => {
   };
 
   const dispatch = useDispatch();
-  const handleSubmit = (e) => {
+
+  const createdTimesheet = useSelector(
+    (state) => state.timesheets.currentTimesheetId
+  );
+
+  React.useEffect(() => {
+    if (createdTimesheet !== null) {
+      history.push(`/timesheets/edit/${createdTimesheet}`);
+    }
+  }, [createdTimesheet]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (monday === "") {
       return;
     }
 
-    dispatch(createTimesheet({ startDate: monday }));
+    await createTimesheet({ startDate: monday })(dispatch);
   };
 
   /* Mondays for the available timesheets */
