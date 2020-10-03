@@ -90,11 +90,12 @@ export const createTimesheet = ({ startDate }) => {
   };
 };
 
-export const updateTimesheet = ({ id, entries }) => {
+export const updateTimesheet = ({ id, status, entries }) => {
   return async (dispatch) => {
     try {
       const updatedTimesheet = await timesheet.patch.update({
         timesheetId: id,
+        status,
         entries,
       });
 
