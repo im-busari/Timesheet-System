@@ -18,11 +18,10 @@ export const AllTimesheetsPage = () => {
   );
 
   const error = useSelector((state) => state.timesheets.getError);
-  console.log(error);
 
   return (
     <Layout>
-      {error ? (
+      {!error?.includes("404") ? (
         <div>
           <p>Seems like something has gone wrong.</p>
           <p>Our bad.</p>
