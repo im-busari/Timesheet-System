@@ -1,30 +1,51 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { TableData, LongTableData } from "./styles";
-import { addWeeks, format as formatDate } from "date-fns";
+import { Link } from "react-router-dom";
+import {
+  addDays,
+  format as formatDate,
+  parse as parseDate,
+  endOfWeek,
+} from "date-fns";
 
 export const TimesheetPreviewListItem = ({
   timesheetId,
-  startDate,
+  startDate: startDateString,
   status,
-  onEdit,
   onDelete,
 }) => {
   const isSubmitted = status === "Submitted";
-  const startDateFormatted = formatDate(new Date(startDate), "dd-MM");
-  const endDate = formatDate(addWeeks(new Date(startDate), 1), "dd-MM");
+
+  const [year, month, day] = startDateString.split("-").reverse();
+
+  const startDate = new Date(year, month - 1, day);
+  const startDateFormatted = formatDate(startDate, "dd-MM");
+
+  const endDateFormatted = formatDate(
+    endOfWeek(startDate, { weekStartsOn: 1 }),
+    "dd-MM"
+  );
 
   return (
     <tr>
       <TableData>{startDateFormatted}</TableData>
-      <TableData>{endDate}</TableData>
+      <TableData>{endDateFormatted}</TableData>
 
       <TableData>{status}</TableData>
       <TableData>
-        <Button variant="secondary">{isSubmitted ? "View" : "Edit"}</Button>
+        <Link to={`/timesheets/edit/${timesheetId}`}>
+          <Button variant="secondary">{isSubmitted ? "View" : "Edit"}</Button>
+        </Link>
       </TableData>
       <TableData>
-        <Button variant="danger" disabled={isSubmitted}>
+        <Button
+          variant="danger"
+          disabled={isSubmitted}
+          onClick={() => {
+            onDelete(timesheetId);
+          }}
+        >
           Delete
         </Button>
       </TableData>
