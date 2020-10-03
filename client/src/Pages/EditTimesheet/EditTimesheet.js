@@ -14,11 +14,18 @@ import { TableFooter } from "./TableFooter";
 import { Entry } from "./Entry";
 import uuid from "react-uuid";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { getTimesheetsForUser } from "../../redux/slices/timesheet";
+import { useParams, useHistory } from "react-router-dom";
+import {
+  clearCurrentTimesheet,
+  deleteTimesheet,
+  getTimesheetsForUser,
+} from "../../redux/slices/timesheet";
+import { current } from "@reduxjs/toolkit";
 
 export const EditTimesheet = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
+
   const loggedUserId = useSelector((state) => state.auth.userId);
   const loggedUser = useSelector(
     (state) => state.users.usersById[loggedUserId]
@@ -31,6 +38,7 @@ export const EditTimesheet = () => {
 
   useEffect(() => {
     dispatch(getTimesheetsForUser());
+    return () => dispatch(clearCurrentTimesheet());
   }, [dispatch]);
 
   const [entries, setEntries] = useState([
@@ -125,38 +133,67 @@ export const EditTimesheet = () => {
     }
   };
 
+  const handleClick = (event) => {
+    const { id } = event.target;
+
+    if (id === "delete") {
+      dispatch(deleteTimesheet({ id: timesheetId }));
+      history.push("/");
+    } else if (id === "save") {
+    } else {
+    }
+  };
+
   return (
-    <MainContainer>
-      <Header>
-        <Information>
-          <WeekInfo>{`Timesheet for week ___`}</WeekInfo>
-          <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
-        </Information>
+    <>
+      {currentTimesheet && (
+        <MainContainer>
+          <Header>
+            <Information>
+              <WeekInfo>{`Timesheet for week ${currentTimesheet.data.startDate
+                .split("-")
+                .join(".")}`}</WeekInfo>
+              <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
+            </Information>
 
-        <BtnsContainer>
-          <Button backgroundColor="danger" text="Delete" />
-          <Button backgroundColor="orange" text="Save" />
-          <Button backgroundColor="green" text="Submit" />
-        </BtnsContainer>
-      </Header>
+            <BtnsContainer>
+              <Button
+                backgroundColor="danger"
+                text="Delete"
+                id="delete"
+                onClick={handleClick}
+              />
+              <Button backgroundColor="orange" text="Save" id="save" />
+              <Button backgroundColor="green" text="Submit" />
+            </BtnsContainer>
+          </Header>
 
-      <Container fluid>
-        <TableHeader />
+          <Container fluid>
+            <TableHeader startDate={currentTimesheet.data.startDate} />
 
-        {currentTimesheet &&
-          currentTimesheet.entries.map((entry) => (
             <Entry
-              key={entry.data.id}
-              entryId={entry.data.id}
-              entry={entry}
+              key="default entry key"
+              entryId="default entry id"
               addEmptyEntry={addEmptyEntry}
               handleChange={handleChange}
               handleEntryDelete={handleEntryDelete}
             />
-          ))}
+            {currentTimesheet &&
+              currentTimesheet.entries.map((entry) => (
+                <Entry
+                  key={entry.data.id}
+                  entryId={entry.data.id}
+                  entry={entry}
+                  addEmptyEntry={addEmptyEntry}
+                  handleChange={handleChange}
+                  handleEntryDelete={handleEntryDelete}
+                />
+              ))}
 
-        <TableFooter entries={entries} />
-      </Container>
-    </MainContainer>
+            <TableFooter entries={entries} />
+          </Container>
+        </MainContainer>
+      )}
+    </>
   );
 };

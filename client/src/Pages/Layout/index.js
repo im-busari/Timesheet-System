@@ -6,6 +6,7 @@ const LayoutContainer = styled.div`
   flex-direction: row;
   place-items: center;
   place-content: center;
+
   /* dont touch */
   height: 92vh;
   width: auto;

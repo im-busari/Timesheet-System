@@ -26,7 +26,7 @@ export const Username = styled.div`
 `;
 export const StyledNavItem = styled(Nav.Item)`
   list-style-type: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   transition: transform 0.5s;
   :hover {
     transform: scale(1.125);

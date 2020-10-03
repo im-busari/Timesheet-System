@@ -5,7 +5,7 @@ export const MainContainer = styled.div`
   flex-direction: column;
   color: var(--white);
   cursor: pointer;
-  margin-left: 2rem;
+  margin-left: 1rem;
   margin-right: 1rem;
 `;
 export const LineOne = styled.div`

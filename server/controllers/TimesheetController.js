@@ -203,11 +203,7 @@ class TimesheetController {
 
         try {
             // Finds one by id.
-            const timesheet = await Timesheet.findOne({
-                where: {
-                    id: req.params.id,
-                },
-            });
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
             if (timesheet) {
                 await Timesheet.destroy({
