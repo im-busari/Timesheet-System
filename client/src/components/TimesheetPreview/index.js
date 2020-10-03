@@ -2,9 +2,28 @@ import React from "react";
 import { TimesheetPreviewListItem } from "../TimesheetPreviewListItem";
 import { Table } from "react-bootstrap";
 import { TableHeader } from "./styles";
-import { Layout } from "../../Pages/Layout";
+import { sortTimesheets } from "../../utils/sortTimesheets";
+import { useDispatch } from "react-redux";
+import { deleteTimesheet } from "../../redux/slices/timesheet";
+export const TimesheetPreview = ({ timesheets }) => {
+  const dispatch = useDispatch();
 
-export const TimesheetPreview = () => {
+  const handleDelete = (id) => {
+    dispatch(deleteTimesheet({ id }));
+  };
+
+  const allTimesheets = timesheets.sort(sortTimesheets).map((timesheet) => {
+    return (
+      <TimesheetPreviewListItem
+        startDate={timesheet?.data?.startDate}
+        status={timesheet?.data?.status}
+        key={timesheet?.data?.id}
+        timesheetId={timesheet?.data?.id}
+        onDelete={handleDelete}
+      />
+    );
+  });
+
   return (
     <Table bordered hover>
       <thead>
@@ -16,11 +35,7 @@ export const TimesheetPreview = () => {
           <TableHeader>Remove</TableHeader>
         </tr>
       </thead>
-      <tbody>
-        <TimesheetPreviewListItem startDate="09/21" status="Open" />
-        <TimesheetPreviewListItem startDate="09/28" status="Open" />
-        <TimesheetPreviewListItem startDate="10/05" status="Submitted" />
-      </tbody>
+      <tbody>{allTimesheets}</tbody>
     </Table>
   );
 };

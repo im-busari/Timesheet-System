@@ -27,7 +27,7 @@ export const AppRoutes = () => {
         <Route exact path="/">
           {currentUserId ? <AllTimesheetsPage /> : guestRedirect}
         </Route>
-        <Route exact path="/timesheets/edit">
+        <Route exact path="/timesheets/edit/:timesheetId">
           {currentUserId ? <EditTimesheet /> : guestRedirect}
         </Route>
         <Route exact path="/timesheets/create">

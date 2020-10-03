@@ -192,11 +192,7 @@ class TimesheetController {
 
     try {
       // Finds one by id.
-      const timesheet = await Timesheet.findOne({
-        where: {
-          id: req.params.id,
-        },
-      });
+      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
       if (timesheet) {
         await Timesheet.destroy({
@@ -209,6 +205,7 @@ class TimesheetController {
         res.status(409).json({ error: "Timesheet doesn't exist!" });
       }
     } catch (err) {
+      console.log(err);
       res.status(403).json(err);
     }
   }
