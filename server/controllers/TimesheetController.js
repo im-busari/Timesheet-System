@@ -125,7 +125,6 @@ class TimesheetController {
                 if (entry.days[index].hours !== updateDay.hours) {
                   updateDay.hours = entry.days[index].hours;
                 }
-
                 // save changes inside DB
                 await updateDay.save();
               } else {

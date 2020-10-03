@@ -4,15 +4,7 @@ import { Table } from "react-bootstrap";
 import { TableHeader } from "./styles";
 import { Layout } from "../../Pages/Layout";
 
-export const TimesheetPreview = ({ timesheets }) => {
-  const allTimesheets = timesheets.map((timesheet) => {
-    const { status, startDate, id } = timesheet.data;
-
-    return (
-      <TimesheetPreviewListItem startDate="08-20" status={status} key={id} />
-    );
-  });
-
+export const TimesheetPreview = () => {
   return (
     <Table bordered hover>
       <thead>
@@ -24,7 +16,11 @@ export const TimesheetPreview = ({ timesheets }) => {
           <TableHeader>Remove</TableHeader>
         </tr>
       </thead>
-      <tbody>{allTimesheets}</tbody>
+      <tbody>
+        <TimesheetPreviewListItem startDate="09/21" status="Open" />
+        <TimesheetPreviewListItem startDate="09/28" status="Open" />
+        <TimesheetPreviewListItem startDate="10/05" status="Submitted" />
+      </tbody>
     </Table>
   );
 };
