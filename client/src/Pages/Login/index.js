@@ -1,6 +1,5 @@
 import React from "react";
 import { AuthForm } from "../../components/AuthForm";
-import { loginValidation } from "../../validation";
 import { Layout } from "../Layout";
 import { Title } from "../../components/generic/Title";
 import { useDispatch } from "react-redux";
