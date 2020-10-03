@@ -80,10 +80,21 @@ class TimesheetController {
 
   async updateTimesheet(req, res) {
     try {
-      console.log('start update');
-
       const entries = req.body.entries;
-      // console.log(`Number of entries: ${numOfEntries}`);
+
+      const isSubmitted = req.body.submitted;
+
+      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+      if (timesheet.status === 'Submitted') {
+        res.status(403).json({ error: 'This timesheet is already submitted!' });
+        return;
+      }
+
+      if (isSubmitted) {
+        timesheet.status = 'Submitted';
+        await timesheet.save();
+      }
 
       for (const entry of entries) {
         // if new => entry.id === null
@@ -137,10 +148,10 @@ class TimesheetController {
               }
             }
           }
-          res.send({ updateTimesheetEntry });
         }
       }
-      console.log('It works!');
+
+      res.redirect(`/timesheets/${req.params.timesheetId}`);
     } catch (err) {
       res.status(403).json(err);
     }
@@ -205,7 +216,6 @@ class TimesheetController {
         res.status(409).json({ error: "Timesheet doesn't exist!" });
       }
     } catch (err) {
-      console.log(err);
       res.status(403).json(err);
     }
   }

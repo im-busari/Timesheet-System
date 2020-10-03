@@ -11,7 +11,17 @@ const { reducer, actions } = createSlice({
   initialState,
   reducers: {
     fetch: (state, action) => {
-      state.projects = action.payload;
+      const allProjects = action.payload;
+
+      for (const project of allProjects) {
+        const projectId = project.id;
+
+        if (!state.projects[projectId]) {
+          state.projects[projectId] = {};
+        }
+
+        state.projects[projectId] = project;
+      }
     },
     fetchError: (state, action) => {
       state.error = action.payload;
@@ -25,7 +35,9 @@ export { reducer as projectReducer, actions as projectAction };
 export const getAllProjects = () => {
   return async (dispatch) => {
     try {
-      const allProjects = await projects.get.allProjects();
+      const res = await projects.get.allProjects();
+      const allProjects = res.projects;
+
       dispatch(actions.fetch(allProjects));
     } catch (error) {
       dispatch(actions.fetchError(error.message));
