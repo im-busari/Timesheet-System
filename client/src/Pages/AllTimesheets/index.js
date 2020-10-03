@@ -21,7 +21,7 @@ export const AllTimesheetsPage = () => {
 
   return (
     <Layout>
-      {!error?.includes("404") ? (
+      {error & !error?.includes("404") ? (
         <div>
           <p>Seems like something has gone wrong.</p>
           <p>Our bad.</p>

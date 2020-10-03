@@ -7,7 +7,7 @@ export const get = {
   },
 
   timesheetById: async ({ timesheetId }) => {
-    const res = await axios.get(`/timesheet/${timesheetId}`);
+    const res = await axios.get(`/timesheets/${timesheetId}`);
     return res.data;
   },
 };

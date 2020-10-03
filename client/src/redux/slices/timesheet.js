@@ -4,6 +4,7 @@ import { timesheet } from "../../api";
 const initialState = {
   timesheets: {},
   currentTimesheetId: null,
+  // currentTimesheet: {},
   getError: null,
   createError: null,
   updateError: null,
@@ -30,6 +31,13 @@ const { reducer, actions } = createSlice({
     },
     fetchError: (state, action) => {
       return { ...state, getError: action.payload };
+    },
+    fetchOne: (state, action) => {
+      state.currentTimesheet = action.payload;
+      state.getError = null;
+    },
+    fetchOneError: (state, action) => {
+      state.getError = action.payload;
     },
     create: (state, action) => {
       const timesheetId = action.payload.data.id;
@@ -62,6 +70,31 @@ const { reducer, actions } = createSlice({
     deleteError: (state, action) => {
       return { ...state, deleteError: action.payload };
     },
+
+    addEmptyEntry: (state, action) => {
+      const timesheetId = action.payload;
+
+      if (!state.timesheets[timesheetId]) {
+        state.timesheets[timesheetId] = {};
+      }
+
+      if (!state.timesheets[timesheetId].entries) {
+        state.timesheets[timesheetId].entries = [];
+      }
+
+      state.timesheets[timesheetId].entries.push({
+        projectId: null,
+        taskId: null,
+        mon: 0,
+        tue: 0,
+        wed: 0,
+        thu: 0,
+        fri: 0,
+        sat: 0,
+        sun: 0,
+      });
+    },
+
     clearCurrent: (state) => {
       return { ...state, currentTimesheetId: null };
     },
@@ -78,6 +111,18 @@ export const getTimesheetsForUser = () => {
       dispatch(actions.fetch(timesheets));
     } catch (error) {
       dispatch(actions.fetchError(error.message));
+    }
+  };
+};
+
+export const getTimesheetById = ({ timesheetId }) => {
+  return async (dispatch) => {
+    try {
+      const timesheetRaw = await timesheet.get.timesheetById({ timesheetId });
+      const timeshetFormatted = timesheetRaw.timesheet;
+      dispatch(actions.fetchOne(timeshetFormatted));
+    } catch (error) {
+      dispatch(actions.fetchOneError(error.message));
     }
   };
 };
@@ -118,6 +163,12 @@ export const deleteTimesheet = ({ id }) => {
     } catch (error) {
       dispatch(actions.deleteError(error.message));
     }
+  };
+};
+
+export const addEmptyEntry = ({ timesheetId }) => {
+  return (dispatch) => {
+    dispatch(actions.addEmptyEntry(timesheetId));
   };
 };
 
