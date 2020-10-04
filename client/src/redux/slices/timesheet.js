@@ -107,10 +107,11 @@ const { reducer, actions } = createSlice({
       } = action.payload;
       // console.log(entryIndex);
       // find timesheet byId
+      console.log(`Project and task: ${projectId}, ${taskId}`);
 
       // console.log(timesheetId);
       // console.log(state.ids);
-      console.log(JSON.stringify(state.byId[timesheetId], undefined, 2));
+      // console.log(JSON.stringify(state.byId[timesheetId], undefined, 2));
       // console.log(state.byId[timesheetId]);
       const timesheetEntries = state.byId[timesheetId]?.entries;
       if (timesheetEntries.length < 1 || timesheetEntries.length < entryIndex) {
@@ -130,28 +131,27 @@ const { reducer, actions } = createSlice({
         console.log("Timesheet Entries", timesheetEntries);
 
         let isChanged = false;
-        state.byId[timesheetId].entries[entryIndex].days.forEach((day) => {
-          if (day.id && day.date === dayDate) {
-            day.hours = hours;
-            isChanged = true;
-          } else if (!day.id && day.date === dayDate) {
-            day.hours = hours;
-            isChanged = true;
-          }
-        });
-
-        // IT WORKS
-        if (!isChanged) {
-          state.byId[timesheetId].entries[entryIndex].days.push({
-            timesheetEntryId: state.byId[timesheetId]?.entries[entryIndex].id,
-            date: dayDate,
-            hours: hours,
+        if (dayDate) {
+          state.byId[timesheetId].entries[entryIndex].days.forEach((day) => {
+            if (day.id && day.date === dayDate) {
+              day.hours = hours;
+              isChanged = true;
+            } else if (!day.id && day.date === dayDate) {
+              day.hours = hours;
+              isChanged = true;
+            }
           });
+
+          // IT WORKS
+          if (!isChanged) {
+            state.byId[timesheetId].entries[entryIndex].days.push({
+              timesheetEntryId: state.byId[timesheetId]?.entries[entryIndex].id,
+              date: dayDate,
+              hours: hours,
+            });
+          }
         }
       }
-      // if(timesheet.entries.length < 1) {
-      //   timesheet.entries.push
-      // }
       // loop entries and compare with entryId
     },
 
@@ -239,10 +239,24 @@ export const clearCurrentTimesheet = () => {
   };
 };
 
-export const updateDay = ({ timesheetId, entryIndex, dayDate, hours }) => {
+export const updateDay = ({
+  timesheetId,
+  entryIndex,
+  dayDate,
+  hours,
+  projectId,
+  taskId,
+}) => {
   return (dispatch) => {
     dispatch(
-      actions.updateDayState({ timesheetId, entryIndex, dayDate, hours })
+      actions.updateDayState({
+        timesheetId,
+        entryIndex,
+        dayDate,
+        hours,
+        projectId,
+        taskId,
+      })
     );
   };
 };
