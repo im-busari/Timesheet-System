@@ -20,9 +20,9 @@ export const Entry = ({
   const [day, month, year] = startDate.split("-");
   const dispatch = useDispatch();
   const projectIds = useSelector((state) => state.projects.ids);
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState(entry.data.projectId);
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState(tasks[0].id);
 
   useEffect(() => {
     console.log(tasks);
