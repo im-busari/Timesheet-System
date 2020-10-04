@@ -8,8 +8,8 @@ const initialState = {
   error: null,
 };
 
-const timesheetSchema = new schema.Entity("timesheets");
-const timesheetsListSchema = new schema.Array(timesheetSchema);
+// const timesheetSchema = new schema.Entity("timesheets");
+// const timesheetsListSchema = new schema.Array(timesheetSchema);
 
 const { reducer, actions } = createSlice({
   name: "timesheets",
@@ -97,13 +97,58 @@ const { reducer, actions } = createSlice({
       // });
     },
     updateDayState: (state, action) => {
-      const { timesheetId, entryIndex, dayDate, hours } = action.payload;
-      console.log(entryIndex);
+      const {
+        timesheetId,
+        entryIndex,
+        dayDate,
+        hours,
+        projectId,
+        taskId,
+      } = action.payload;
+      // console.log(entryIndex);
       // find timesheet byId
-      // const timesheetEntries = state.byId[timesheetId]?.entries;
-      // if (timesheetEntries.length < 1) {
-      //
-      // }
+
+      // console.log(timesheetId);
+      // console.log(state.ids);
+      console.log(JSON.stringify(state.byId[timesheetId], undefined, 2));
+      // console.log(state.byId[timesheetId]);
+      const timesheetEntries = state.byId[timesheetId]?.entries;
+      if (timesheetEntries.length < 1 || timesheetEntries.length < entryIndex) {
+        state.byId[timesheetId].entries.push({
+          data: {
+            timesheetId: timesheetId,
+            projectId: projectId,
+            taskId: taskId,
+          },
+          days: [],
+        });
+      } else {
+        state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
+        state.byId[timesheetId].entries[entryIndex].data.taskId = taskId;
+
+        console.log(timesheetId);
+        console.log("Timesheet Entries", timesheetEntries);
+
+        let isChanged = false;
+        state.byId[timesheetId].entries[entryIndex].days.forEach((day) => {
+          if (day.id && day.date === dayDate) {
+            day.hours = hours;
+            isChanged = true;
+          } else if (!day.id && day.date === dayDate) {
+            day.hours = hours;
+            isChanged = true;
+          }
+        });
+
+        // IT WORKS
+        if (!isChanged) {
+          state.byId[timesheetId].entries[entryIndex].days.push({
+            timesheetEntryId: state.byId[timesheetId]?.entries[entryIndex].id,
+            date: dayDate,
+            hours: hours,
+          });
+        }
+      }
       // if(timesheet.entries.length < 1) {
       //   timesheet.entries.push
       // }
@@ -123,6 +168,7 @@ export const getTimesheetsForUser = () => {
     try {
       const timesheetsRaw = await timesheet.get.allTimesheetsForUser();
       const timesheets = timesheetsRaw.map((ts) => ts.timesheet);
+
       dispatch(actions.fetch(timesheets));
     } catch (error) {
       dispatch(actions.fetchError(error.message));

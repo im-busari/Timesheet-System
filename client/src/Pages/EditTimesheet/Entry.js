@@ -24,8 +24,8 @@ export const Entry = ({
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
 
   const onChangeHandler = (e, dayDate) => {
-    e.preventDefault();
-    return dispatch(
+    console.log(e.target.value);
+    dispatch(
       updateDay({ timesheetId, entryIndex, dayDate, hours: e.target.value })
     );
   };
@@ -77,12 +77,12 @@ export const Entry = ({
       <Col as={StyledCol}>
         <NumberInput
           id="tue"
-          onChange={(event) => {
+          onChange={(e) => {
             const dayDate = format(
               addDays(new Date(year, month - 1, day), 1),
               "dd-MM-yyyy"
             );
-            onChangeHandler(event, dayDate);
+            onChangeHandler(e, dayDate);
             console.log(dayDate);
           }}
         />
@@ -147,6 +147,7 @@ export const Entry = ({
           }}
         />
       </Col>
+      <Col as={StyledCol}></Col>
     </Row>
   );
 };

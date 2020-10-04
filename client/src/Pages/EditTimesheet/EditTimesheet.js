@@ -28,7 +28,7 @@ export const EditTimesheet = () => {
   const currentEntries = useSelector(
     (state) => state.timesheets.byId[timesheetId]?.entries
   );
-  console.log(currentTimesheet);
+  // console.log(currentTimesheet);
 
   // entry.data
   // entry.days => another for each loop -> fix seeders days date ---- TODO:
