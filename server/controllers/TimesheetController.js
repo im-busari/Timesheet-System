@@ -86,7 +86,10 @@ class TimesheetController {
 
       const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
+      console.log('Outside: ', entries);
+
       if (timesheet.status === 'Submitted') {
+        console.log('marked as submitted');
         res.status(403).json({ error: 'This timesheet is already submitted!' });
         return;
       }
@@ -96,54 +99,62 @@ class TimesheetController {
         await timesheet.save();
       }
 
-      for (const entry of entries) {
+      for (const entry in entries) {
+        console.log(entries[entry]);
         // if new => entry.id === null
-        if (!entry.id) {
+        if (!entries[entry].data.id) {
           const newTimesheetEntry = await TimesheetEntry.create({
-            timesheetId: entry.timesheetId,
-            projectId: entry.projectId,
-            taskId: entry.taskId,
+            timesheetId: req.params.timesheetId,
+            projectId: entries[entry].data.projectId,
+            taskId: entries[entry].data.taskId,
           });
-          if (entry.days) {
-            for (const index in entry.days) {
+
+          // console.log(newTimesheetEntry);
+          if (entries[entry].days) {
+            for (const index in entries[entry].days) {
               await Day.create({
                 timesheetEntryId: newTimesheetEntry.id,
-                date: entry.days[index].date,
-                hours: entry.days[index].hours,
+                date: entries[entry].days[index].date,
+                hours: entries[entry].days[index].hours,
               });
             }
           }
-          res.send({ newTimesheetEntry });
         } else {
-          const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
-          if (entry.projectId !== updateTimesheetEntry.projectId) {
-            updateTimesheetEntry.projectId = entry.projectId;
+          const updateTimesheetEntry = await TimesheetEntry.findByPk(
+            entries[entry].data.id
+          );
+          if (
+            entries[entry].data.projectId !== updateTimesheetEntry.projectId
+          ) {
+            updateTimesheetEntry.projectId = entries[entry].data.projectId;
           }
-          if (entry.taskId !== updateTimesheetEntry.taskId) {
-            updateTimesheetEntry.taskId = entry.taskId;
+          if (entries[entry].data.taskId !== updateTimesheetEntry.taskId) {
+            updateTimesheetEntry.taskId = entries[entry].data.taskId;
           }
           await updateTimesheetEntry.save();
 
-          if (entry.days) {
+          if (entries[entry].days) {
             // get current timesheetEntry days and check for id
-            for (const index in entry.days) {
-              if (entry.days[index].id) {
-                const updateDay = await Day.findByPk(entry.days[index].id);
+            for (const index in entries[entry].days) {
+              if (entries[entry].days[index].id) {
+                const updateDay = await Day.findByPk(
+                  entries[entry].days[index].id
+                );
                 // check if stored information is different from req.body.entries.day[index]
-                if (entry.days[index].date !== updateDay.date) {
-                  updateDay.date = entry.days[index].date;
+                if (entries[entry].days[index].date !== updateDay.date) {
+                  updateDay.date = entries[entry].days[index].date;
                 }
-                if (entry.days[index].hours !== updateDay.hours) {
-                  updateDay.hours = entry.days[index].hours;
+                if (entries[entry].days[index].hours !== updateDay.hours) {
+                  updateDay.hours = entries[entry].days[index].hours;
                 }
                 // save changes inside DB
                 await updateDay.save();
               } else {
                 //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
                 await Day.create({
-                  timesheetEntryId: entry.id,
-                  date: entry.days[index].date,
-                  hours: entry.days[index].hours,
+                  timesheetEntryId: entries[entry].data.id,
+                  date: entries[entry].days[index].date,
+                  hours: entries[entry].days[index].hours,
                 });
               }
             }
@@ -151,8 +162,9 @@ class TimesheetController {
         }
       }
 
-      res.redirect(`/timesheets/${req.params.timesheetId}`);
+      res.send({ success: true });
     } catch (err) {
+      console.log(err);
       res.status(403).json(err);
     }
   }

@@ -22,15 +22,15 @@ export const CreateTimesheet = () => {
 
   const dispatch = useDispatch();
 
-  const createdTimesheet = useSelector(
-    (state) => state.timesheets.currentTimesheetId
-  );
+  // const createdTimesheet = useSelector(
+  //   (state) => state.timesheets.currentTimesheetId
+  // );
 
-  React.useEffect(() => {
-    if (createdTimesheet !== null) {
-      history.push(`/timesheets/edit/${createdTimesheet}`);
-    }
-  }, [createdTimesheet]);
+  // React.useEffect(() => {
+  //   if (createdTimesheet !== null) {
+  //     history.push(`/timesheets/edit/${createdTimesheet}`);
+  //   }
+  // }, [createdTimesheet]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,6 +40,7 @@ export const CreateTimesheet = () => {
     }
 
     dispatch(createTimesheet({ startDate: monday }));
+    history.push("/");
   };
 
   /* Mondays for the available timesheets */

@@ -23,9 +23,11 @@ export const post = {
 };
 
 export const patch = {
-  update: async ({ timesheetId, entries }) => {
+  update: async ({ timesheetId, entries, submitted }) => {
+    console.log(entries);
     const res = await axios.patch(`/timesheets/${timesheetId}`, {
       entries,
+      submitted,
     });
 
     return res.data;

@@ -1,6 +1,6 @@
 import React from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   BtnsContainer,
   Header,
@@ -16,9 +16,11 @@ import { Entry } from "./Entry";
 import { TableFooter } from "./TableFooter";
 import { DefaultContext } from "react-icons";
 import { DefaultEntry } from "./DefaultEntry";
+import { updateTimesheet } from "../../redux/slices/timesheet";
 
 export const EditTimesheet = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const loggedUserId = useSelector((state) => state.auth.userId);
   const loggedUser = useSelector(
     (state) => state.users.usersById[loggedUserId]
@@ -68,7 +70,11 @@ export const EditTimesheet = () => {
                 backgroundColor="orange"
                 text="Save"
                 id="save"
-                onClick={() => console.log("Save")}
+                onClick={() =>
+                  dispatch(
+                    updateTimesheet({ currentTimesheet, submitted: false })
+                  )
+                }
               />
               <Button
                 backgroundColor="green"

@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { timesheet } from "../../api";
 import { normalize, schema } from "normalizr";
+import { useSelector } from "react-redux";
 
 const initialState = {
   ids: [],
@@ -55,8 +56,9 @@ const { reducer, actions } = createSlice({
     },
     update: (state, action) => {
       const timesheetId = action.payload.data.id;
+      console.log("successs");
 
-      state.timesheets[timesheetId] = action.payload;
+      state.byId[timesheetId] = action.payload;
     },
     updateError: (state, action) => {
       return { ...state, error: action.payload };
@@ -85,17 +87,10 @@ const { reducer, actions } = createSlice({
       });
     },
     updateDayState: (state, action) => {
-      const {
-        timesheetId,
-        entryIndex,
-        dayDate,
-        hours,
-        projectId,
-        taskId,
-      } = action.payload;
+      const { timesheetId, entryIndex, dayDate, hours } = action.payload;
       // console.log(entryIndex);
       // find timesheet byId
-      console.log(`Project and task: ${projectId}, ${taskId}`);
+      // console.log(`Project and task: ${projectId}, ${taskId}`);
 
       // console.log(timesheetId);
       // console.log(state.ids);
@@ -103,17 +98,17 @@ const { reducer, actions } = createSlice({
       // console.log(state.byId[timesheetId]);
       const timesheetEntries = state.byId[timesheetId]?.entries;
       if (timesheetEntries.length < 1 || timesheetEntries.length < entryIndex) {
-        state.byId[timesheetId].entries.push({
-          data: {
-            timesheetId: timesheetId,
-            projectId: projectId,
-            taskId: taskId,
-          },
-          days: [],
-        });
+        // state.byId[timesheetId].entries.push({
+        //   data: {
+        //     timesheetId: timesheetId,
+        //     projectId: projectId,
+        //     taskId: taskId,
+        //   },
+        //   days: [],
+        // });
       } else {
-        state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
-        state.byId[timesheetId].entries[entryIndex].data.taskId = taskId;
+        // state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
+        // state.byId[timesheetId].entries[entryIndex].data.taskId = taskId;
 
         // console.log(timesheetId);
         // console.log("Timesheet Entries", timesheetEntries);
@@ -200,14 +195,17 @@ export const createTimesheet = ({ startDate }) => {
   };
 };
 
-export const updateTimesheet = ({ id, entries }) => {
+export const updateTimesheet = ({ currentTimesheet, submitted }) => {
   return async (dispatch) => {
     try {
+      // console.log(currentTimesheet);
       const updatedTimesheet = await timesheet.patch.update({
-        timesheetId: id,
-        entries,
+        timesheetId: currentTimesheet.data.id,
+        entries: currentTimesheet.entries,
+        submitted,
       });
 
+      console.log(updatedTimesheet);
       dispatch(actions.update(updatedTimesheet));
     } catch (error) {
       dispatch(actions.updateError(error.message));
