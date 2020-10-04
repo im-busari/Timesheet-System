@@ -1,14 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { timesheet } from "../../api";
+import { normalize, schema } from "normalizr";
 
 const initialState = {
-  timesheets: {},
-  currentTimesheetId: null,
-  // currentTimesheet: {},
-  getError: null,
-  createError: null,
-  updateError: null,
+  ids: [],
+  byId: {},
 };
+
+const timesheetSchema = new schema.Entity("posts");
+const timesheetsListSchema = new schema.Array(timesheetSchema);
 
 const { reducer, actions } = createSlice({
   name: "timesheets",
@@ -16,16 +16,19 @@ const { reducer, actions } = createSlice({
   reducers: {
     fetch: (state, action) => {
       const timesheets = action.payload;
+      console.log(timesheets[0].data.id);
 
-      for (const timesheet of timesheets) {
+      timesheets.forEach((timesheet) => {
+        console.log(timesheet);
         const timesheetId = timesheet.data.id;
+        console.log(timesheetId);
 
-        if (!state.timesheets[timesheetId]) {
-          state.timesheets[timesheetId] = {};
+        if (!state.byId[timesheetId]) {
+          state.ids.push(timesheetId);
         }
 
-        state.timesheets[timesheetId] = timesheet;
-      }
+        state.byId[timesheetId] = timesheet;
+      });
 
       state.getError = null;
     },
@@ -108,6 +111,7 @@ export const getTimesheetsForUser = () => {
     try {
       const timesheetsRaw = await timesheet.get.allTimesheetsForUser();
       const timesheets = timesheetsRaw.map((ts) => ts.timesheet);
+      console.log(timesheets);
       dispatch(actions.fetch(timesheets));
     } catch (error) {
       dispatch(actions.fetchError(error.message));

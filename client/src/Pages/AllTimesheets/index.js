@@ -13,9 +13,7 @@ export const AllTimesheetsPage = () => {
     dispatch(getAllProjects());
   }, [dispatch]);
 
-  const timesheets = useSelector((state) =>
-    Object.values(state.timesheets.timesheets)
-  );
+  const timesheetIds = useSelector((state) => state.timesheets.ids);
 
   const error = useSelector((state) => state.timesheets.getError);
 
@@ -28,11 +26,7 @@ export const AllTimesheetsPage = () => {
         </div>
       ) : (
         <div>
-          {timesheets.length ? (
-            <TimesheetPreview timesheets={timesheets} />
-          ) : (
-            <NoTimesheetMessage />
-          )}
+          {timesheetIds.length ? <TimesheetPreview /> : <NoTimesheetMessage />}
         </div>
       )}
     </Layout>
