@@ -4,37 +4,27 @@ import { BsTrash2Fill } from "react-icons/bs";
 import { StyledCol, EntryRow } from "./EditTimesheetStyledComponents";
 import { NumberInput } from "../../components/generic/NumberInput";
 import { DeleteBtn } from "./EditTimesheetStyledComponents";
-import { updateDay } from "../../redux/slices/timesheet";
 import { projects } from "../../api";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ProjectOption } from "./components/ProjectOption";
-import { format, addDays } from "date-fns";
 
+// CURRENTLY NOT USING
 export const Entry = ({
-  timesheetId,
   entry,
   entryId,
-  entryIndex,
-  startDate,
+  handleChange,
+  addEmptyEntry,
+  handleEntryDelete,
 }) => {
-  const [day, month, year] = startDate.split("-");
-  const dispatch = useDispatch();
   const projectIds = useSelector((state) => state.projects.ids);
   const [project, setProject] = useState(entry.data.projectId);
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
-
-  const onChangeHandler = (e, dayDate) => {
-    e.preventDefault();
-    return dispatch(
-      updateDay({ timesheetId, entryIndex, dayDate, hours: e.target.value })
-    );
-  };
 
   return (
     <Row as={EntryRow}>
       <Col as={StyledCol}>
         {project !== null && (
-          <DeleteBtn onClick={() => console.log("Delete Btb")}>
+          <DeleteBtn onClick={() => handleEntryDelete(entryId)}>
             <BsTrash2Fill />
           </DeleteBtn>
         )}
@@ -43,6 +33,8 @@ export const Entry = ({
         <select
           id="project"
           onChange={(event) => {
+            addEmptyEntry(event, entryId);
+            handleChange(event, entryId);
             setProject(event.target.value);
           }}
         >
@@ -64,89 +56,46 @@ export const Entry = ({
       <Col as={StyledCol}>
         <NumberInput
           id="mon"
-          onChange={(event) => {
-            const dayDate = format(
-              new Date(year, month - 1, day),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(event, dayDate);
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="tue"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 1),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(event, dayDate);
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="wed"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 2),
-              "dd-MM-yyyy"
-            );
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="thu"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 3),
-              "dd-MM-yyyy"
-            );
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="fri"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 4),
-              "dd-MM-yyyy"
-            );
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="sat"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 5),
-              "dd-MM-yyyy"
-            );
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="sun"
-          onChange={(event) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 6),
-              "dd-MM-yyyy"
-            );
-            console.log(dayDate);
-          }}
+          onChange={(event) => handleChange(event, entryId)}
         />
       </Col>
+      <Col as={StyledCol}></Col>
     </Row>
   );
 };

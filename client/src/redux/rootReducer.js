@@ -1,13 +1,13 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import { authReducer } from "./slices/auth";
 import { userReducer } from "./slices/users";
-import { timesheetReducer } from "./slices/timesheet";
+import { timesheetsReducer } from "./slices/timesheet";
 import { projectReducer } from "./slices/project";
 
 const appReducer = combineReducers({
   auth: authReducer,
   users: userReducer,
-  timesheets: timesheetReducer,
+  timesheets: timesheetsReducer,
   projects: projectReducer,
 });
 

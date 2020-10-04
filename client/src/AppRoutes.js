@@ -11,8 +11,8 @@ import { RegisterPage } from "./Pages";
 import { Navigation } from "./components/Navigation";
 import { AllTimesheetsPage } from "./Pages";
 import { CreateTimesheet } from "./Pages";
-// import { EditTimesheet } from "./Pages";
-import { EditTimesheet } from "./Pages/EditTimesheet/EditTimesheet-draft";
+// import { EditTimesheetDraft } from "./Pages";
+import { EditTimesheet } from "./Pages/EditTimesheet/EditTimesheet";
 
 import { useSelector } from "react-redux";
 

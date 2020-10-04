@@ -22,7 +22,7 @@ import {
 } from "../../redux/slices/timesheet";
 import { current } from "@reduxjs/toolkit";
 
-export const EditTimesheet = () => {
+export const EditTimesheetDraft = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 

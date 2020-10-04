@@ -96,6 +96,19 @@ const { reducer, actions } = createSlice({
       //   sun: 0,
       // });
     },
+    updateDayState: (state, action) => {
+      const { timesheetId, entryIndex, dayDate, hours } = action.payload;
+      console.log(entryIndex);
+      // find timesheet byId
+      // const timesheetEntries = state.byId[timesheetId]?.entries;
+      // if (timesheetEntries.length < 1) {
+      //
+      // }
+      // if(timesheet.entries.length < 1) {
+      //   timesheet.entries.push
+      // }
+      // loop entries and compare with entryId
+    },
 
     clearCurrent: (state) => {
       return { ...state, currentTimesheetId: null };
@@ -103,7 +116,7 @@ const { reducer, actions } = createSlice({
   },
 });
 
-export { reducer as timesheetReducer, actions as timesheetActions };
+export { reducer as timesheetsReducer, actions as timesheetActions };
 
 export const getTimesheetsForUser = () => {
   return async (dispatch) => {
@@ -177,5 +190,13 @@ export const addEmptyEntry = ({ timesheetId }) => {
 export const clearCurrentTimesheet = () => {
   return (dispatch) => {
     dispatch(actions.clearCurrent());
+  };
+};
+
+export const updateDay = ({ timesheetId, entryIndex, dayDate, hours }) => {
+  return (dispatch) => {
+    dispatch(
+      actions.updateDayState({ timesheetId, entryIndex, dayDate, hours })
+    );
   };
 };

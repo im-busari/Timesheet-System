@@ -13,6 +13,7 @@ export const AllTimesheetsPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(getAllProjects());
     dispatch(getTimesheetsForUser());
   }, [dispatch]);
 
