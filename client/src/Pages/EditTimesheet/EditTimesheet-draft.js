@@ -16,65 +16,133 @@ import uuid from "react-uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useHistory } from "react-router-dom";
 import {
-  addEmptyEntry,
   clearCurrentTimesheet,
   deleteTimesheet,
-  getTimesheetById,
   getTimesheetsForUser,
 } from "../../redux/slices/timesheet";
-import { Formik, Form, Field, FieldArray } from "formik";
-import { getAllProjects } from "../../redux/slices/project";
+import { current } from "@reduxjs/toolkit";
 
 export const EditTimesheet = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
+
+  const loggedUserId = useSelector((state) => state.auth.userId);
+  const loggedUser = useSelector(
+    (state) => state.users.usersById[loggedUserId]
+  );
+
   const { timesheetId } = useParams();
-  const [isLoading, setIsLoading] = useState(true);
-
-  const authUserId = useSelector((state) => state.auth.userId);
-  const authUserName = useSelector(
-    (state) => state.users.usersById[authUserId]?.username
-  );
-
   const currentTimesheet = useSelector(
-    (state) => state.timesheets.byId[timesheetId]
-  );
-  console.log(currentTimesheet);
-
-  const currentTimesheetEntries = useSelector(
-    (state) => state.timesheets.byId[timesheetId]?.entries
+    (state) => state.timesheets.timesheets[timesheetId]
   );
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      await getTimesheetsForUser()(dispatch);
-      dispatch(getAllProjects());
-      setIsLoading(false);
-    })();
-
+    dispatch(getTimesheetsForUser());
     return () => dispatch(clearCurrentTimesheet());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (!currentTimesheetEntries?.length) {
-  //     dispatch(addEmptyEntry({ timesheetId }));
-  //   }
-  // }, [currentTimesheetEntries, dispatch]);
+  const [entries, setEntries] = useState([
+    {
+      id: uuid(),
+      project: null,
+      task: null,
+      mon: 0,
+      tue: 0,
+      wed: 0,
+      thu: 0,
+      fri: 0,
+      sat: 0,
+      sun: 0,
+    },
+  ]);
 
-  // const addNewEntry = (event, entryId) => {
-  // 	event.persist();
-  // 	dispatch(addEmptyEntry({timesheetId}))
-  // }
-
-  //  TODO: Learn why is this
-  function addNewEntry(event) {
+  const addEmptyEntry = (event, entryId) => {
     event.persist();
-    dispatch(addEmptyEntry({ timesheetId }));
-  }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+    entries.forEach((entry) => {
+      if (entry.id === entryId && entry.project === null) {
+        setEntries((prevState) => {
+          return [
+            ...prevState,
+            {
+              id: uuid(),
+              project: null,
+              task: null,
+              mon: 0,
+              tue: 0,
+              wed: 0,
+              thu: 0,
+              fri: 0,
+              sat: 0,
+              sun: 0,
+            },
+          ];
+        });
+      }
+    });
+  };
+
+  const handleChange = (event, entryId) => {
+    const { id, value } = event.target;
+
+    /* Handles the change of a project */
+    if (id === "project") {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            return { ...entry, project: event.target.value };
+          } else {
+            return entry;
+          }
+        });
+      });
+      /* Handles the change of a task */
+    } else if (id === "task") {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            return { ...entry, task: event.target.value };
+          } else {
+            return entry;
+          }
+        });
+      });
+      /* Handles the change of work hours */
+    } else {
+      setEntries((prevState) => {
+        return prevState.map((entry) => {
+          if (entry.id === entryId) {
+            if (!isNaN(parseInt(value))) {
+              return { ...entry, [id]: parseInt(value) };
+            } else {
+              return { ...entry, [id]: 0 };
+            }
+          } else {
+            return entry;
+          }
+        });
+      });
+    }
+  };
+
+  const handleEntryDelete = (entryId) => {
+    if (entries.length > 1) {
+      setEntries((prevState) =>
+        prevState.filter((entry) => entry.id !== entryId)
+      );
+    }
+  };
+
+  const handleClick = (event) => {
+    const { id } = event.target;
+
+    if (id === "delete") {
+      dispatch(deleteTimesheet({ id: timesheetId }));
+      history.push("/");
+    } else if (id === "save") {
+    } else {
+    }
+  };
 
   return (
     <>
@@ -85,7 +153,7 @@ export const EditTimesheet = () => {
               <WeekInfo>{`Timesheet for week ${currentTimesheet.data.startDate
                 .split("-")
                 .join(".")}`}</WeekInfo>
-              <UserInfo>{`User: ${authUserName}`}</UserInfo>
+              <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
             </Information>
 
             <BtnsContainer>
@@ -93,45 +161,37 @@ export const EditTimesheet = () => {
                 backgroundColor="danger"
                 text="Delete"
                 id="delete"
-                onClick={() => {}}
+                onClick={handleClick}
               />
               <Button backgroundColor="orange" text="Save" id="save" />
               <Button backgroundColor="green" text="Submit" />
             </BtnsContainer>
           </Header>
-          <TableHeader startDate={currentTimesheet.data.startDate} />
 
-          <Formik initialValues={currentTimesheet}>
-            {({ values }) => {
-              console.log("values", values);
+          <Container fluid>
+            <TableHeader startDate={currentTimesheet.data.startDate} />
 
-              return (
-                <Form>
-                  <Container fluid>
-                    {currentTimesheetEntries && (
-                      <FieldArray name="entries">
-                        {(arrayHelpers) => {
-                          return currentTimesheetEntries.map((entry) => {
-                            console.log(entry.data.id);
-                            return (
-                              <Entry
-                                key={entry.data.id}
-                                entryId={entry.data.id}
-                                entry={entry}
-                                handleChange={() => {}}
-                                handleEntryDelete={() => {}}
-                                addEmptyEntry={addNewEntry}
-                              />
-                            );
-                          });
-                        }}
-                      </FieldArray>
-                    )}
-                  </Container>
-                </Form>
-              );
-            }}
-          </Formik>
+            <Entry
+              key="default entry key"
+              entryId="default entry id"
+              addEmptyEntry={addEmptyEntry}
+              handleChange={handleChange}
+              handleEntryDelete={handleEntryDelete}
+            />
+            {currentTimesheet &&
+              currentTimesheet.entries.map((entry) => (
+                <Entry
+                  key={entry.data.id}
+                  entryId={entry.data.id}
+                  entry={entry}
+                  addEmptyEntry={addEmptyEntry}
+                  handleChange={handleChange}
+                  handleEntryDelete={handleEntryDelete}
+                />
+              ))}
+
+            <TableFooter entries={entries} />
+          </Container>
         </MainContainer>
       )}
     </>
