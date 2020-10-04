@@ -1,234 +1,300 @@
-const { Timesheet, TimesheetEntry, Day } = require('../models');
+const {Timesheet, TimesheetEntry, Day} = require('../models');
 const uuidValidator = require('../utils/validateUuid');
 const getUserId = require('../utils/getUserId');
 
 class TimesheetController {
-  async getTimesheetsByUserId(req, res) {
-    try {
-      const timesheets = await Timesheet.findAll({
-        where: {
-          userId: getUserId(req),
-        },
-      });
+    /**
+     * GET /timesheets/user
+     *
+     * Finds all timesheets for the current user.
+     *
+     * Returns an object with all timesheets' data and its relations.
+     */
+    async getTimesheetsByUserId(req, res) {
+        try {
+            /* Find all timesheets b the give user id */
+            const timesheets = await Timesheet.findAll({
+                where: {
+                    userId: getUserId(req),
+                },
+            });
 
-      if (timesheets.length !== 0) {
-        const result = [];
-        const entries = [];
+            if (timesheets.length !== 0) {
+                const result = []; // Stores all timesheet records.
+                const entries = [];
 
-        for (const timesheet in timesheets) {
-          const element = {};
-          const current = timesheets[timesheet];
-          const entriesResult = await current.getTimesheetEntries();
+                for (const timesheet in timesheets) {
+                    const element = {}; // Stores the current timesheet's data and its relations.
+                    const current = timesheets[timesheet]; // Current timesheet.
+                    const entriesResult = await current.getTimesheetEntries(); // All timesheet entries for the current timesheet
 
-          for (const index in entriesResult) {
-            const entryFromDB = await TimesheetEntry.findByPk(
-              entriesResult[index].id
-            );
-            const daysForEntry = await entryFromDB.getDays();
-            entries.push({ data: entriesResult[index], days: daysForEntry });
-          }
+                    for (const index in entriesResult) {
 
-          element.data = current;
-          element.entries = entries;
+                        // Gets the current timesheet entry from the database.
+                        const entryFromDB = await TimesheetEntry.findByPk(
+                            entriesResult[index].id
+                        )
 
-          result.push({ timesheet: element });
+                        // Get all days related with the current timesheet entry.
+                        const daysForEntry = await entryFromDB.getDays();
+
+                        // Pushes the entry data and its days.
+                        entries.push({data: entriesResult[index], days: daysForEntry});
+                    }
+
+                    element.data = current;
+                    element.entries = entries;
+
+                    result.push({timesheet: element});
+                }
+
+                res.status(201).send(result);
+            } else {
+                res
+                    .status(404)
+                    .send({error: "The user doesn't have any timesheets!"});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * GET /timesheets/:timesheetId
+     *
+     * Finds a timesheet by the given id.
+     *
+     * Returns an object with all timesheets' data and its relations.
+     */
+    async getTimesheetById(req, res) {
+        /* Checks if the timesheet is a valid uuid. */
+        if (!uuidValidator(req.params.timesheetId)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
         }
 
-        res.status(201).send(result);
-      } else {
-        res
-          .status(404)
-          .send({ error: "The user doesn't have any timesheets!" });
-      }
-    } catch (err) {
-      res.status(403).json(err);
-    }
-  }
+        try {
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
 
-  async getTimesheetById(req, res) {
-    // Checks if the id is valid
-    if (!uuidValidator(req.params.timesheetId)) {
-      res.status(404).send({ error: 'Invalid timesheet id!' });
-      return;
-    }
+            if (timesheet) {
+                /* Next 12 lines of code has the same structure as the above function */
+                const result = [];
 
-    try {
-      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+                const element = {};
+                const current = timesheet;
+                const entries = await current.getTimesheetEntries();
 
-      if (timesheet) {
-        const result = [];
+                element.data = current;
+                element.entries = entries;
 
-        const element = {};
-        const current = timesheet;
-        const entries = await current.getTimesheetEntries();
+                result.push({timesheet: element});
 
-        element.data = current;
-        element.entries = entries;
-
-        result.push({ timesheet: element });
-
-        res.status(201).send(result);
-      } else {
-        res
-          .status(404)
-          .send({ error: "Timesheet with the given id doesn't exist!" });
-      }
-    } catch (err) {
-      res.status(403).json(err);
-    }
-  }
-
-  async updateTimesheet(req, res) {
-    try {
-      const entries = req.body.entries;
-
-      const isSubmitted = req.body.submitted;
-
-      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
-
-      if (timesheet.status === 'Submitted') {
-        res.status(403).json({ error: 'This timesheet is already submitted!' });
-        return;
-      }
-
-      if (isSubmitted) {
-        timesheet.status = 'Submitted';
-        await timesheet.save();
-      }
-
-      for (const entry of entries) {
-        // if new => entry.id === null
-        if (!entry.id) {
-          const newTimesheetEntry = await TimesheetEntry.create({
-            timesheetId: entry.timesheetId,
-            projectId: entry.projectId,
-            taskId: entry.taskId,
-          });
-          if (entry.days) {
-            for (const index in entry.days) {
-              await Day.create({
-                timesheetEntryId: newTimesheetEntry.id,
-                date: entry.days[index].date,
-                hours: entry.days[index].hours,
-              });
+                res.status(201).send(result);
+            } else {
+                res
+                    .status(404)
+                    .send({error: "Timesheet with the given id doesn't exist!"});
             }
-          }
-          res.send({ newTimesheetEntry });
-        } else {
-          const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
-          if (entry.projectId !== updateTimesheetEntry.projectId) {
-            updateTimesheetEntry.projectId = entry.projectId;
-          }
-          if (entry.taskId !== updateTimesheetEntry.taskId) {
-            updateTimesheetEntry.taskId = entry.taskId;
-          }
-          await updateTimesheetEntry.save();
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
 
-          if (entry.days) {
-            // get current timesheetEntry days and check for id
-            for (const index in entry.days) {
-              if (entry.days[index].id) {
-                const updateDay = await Day.findByPk(entry.days[index].id);
-                // check if stored information is different from req.body.entries.day[index]
-                if (entry.days[index].date !== updateDay.date) {
-                  updateDay.date = entry.days[index].date;
+    /**
+     *
+     * PATCH /timesheets/:timesheetId
+     *
+     * Updates a timesheet's relations by the given data from the input.
+     *
+     * Returns a redirect to the {@link getTimesheetById}.
+     */
+    async updateTimesheet(req, res) {
+        try {
+            // All entries from the input.
+            const entries = req.body.entries;
+
+            // Flag saying if the timesheet is submitted or .
+            const isSubmitted = req.body.submitted;
+
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet.status === 'Submitted') {
+                res.status(403).json({error: 'This timesheet is already submitted!'});
+                return;
+            }
+
+            if (isSubmitted) {
+                timesheet.status = 'Submitted';
+                await timesheet.save();
+            }
+
+            for (const entry of entries) {
+                // If the entry doesn't have an id it will be created a new timesheet entry
+                // with the entry's data.
+                if (!entry.id) {
+                    const newTimesheetEntry = await TimesheetEntry.create({
+                        timesheetId: entry.timesheetId,
+                        projectId: entry.projectId,
+                        taskId: entry.taskId,
+                    });
+                    // If the entry has days, they also will be created.
+                    if (entry.days) {
+                        for (const index in entry.days) {
+                            await Day.create({
+                                timesheetEntryId: newTimesheetEntry.id,
+                                date: entry.days[index].date,
+                                hours: entry.days[index].hours,
+                            });
+                        }
+                    }
+                } else {
+
+                    /* Finds a timesheet entry by the given timesheet entry id. */
+                    const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
+
+                    // If the current entry is not the same as the entry form the database
+                    // the db one will be updated.
+                    if (entry.projectId !== updateTimesheetEntry.projectId) {
+                        updateTimesheetEntry.projectId = entry.projectId;
+                    }
+
+                    // Same logic as the above condition
+                    if (entry.taskId !== updateTimesheetEntry.taskId) {
+                        updateTimesheetEntry.taskId = entry.taskId;
+                    }
+
+                    await updateTimesheetEntry.save();
+
+                    if (entry.days) {
+                        for (const index in entry.days) {
+
+                            // Same logic as the entries with no id
+                            if (entry.days[index].id) {
+                                const updateDay = await Day.findByPk(entry.days[index].id);
+                                // check if stored information is different from req.body.entries.day[index]
+                                if (entry.days[index].date !== updateDay.date) {
+                                    updateDay.date = entry.days[index].date;
+                                }
+                                if (entry.days[index].hours !== updateDay.hours) {
+                                    updateDay.hours = entry.days[index].hours;
+                                }
+                                // save changes inside DB
+                                await updateDay.save();
+                            } else {
+                                //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
+                                await Day.create({
+                                    timesheetEntryId: entry.id,
+                                    date: entry.days[index].date,
+                                    hours: entry.days[index].hours,
+                                });
+                            }
+                        }
+                    }
                 }
-                if (entry.days[index].hours !== updateDay.hours) {
-                  updateDay.hours = entry.days[index].hours;
-                }
-                // save changes inside DB
-                await updateDay.save();
-              } else {
-                //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
-                await Day.create({
-                  timesheetEntryId: entry.id,
-                  date: entry.days[index].date,
-                  hours: entry.days[index].hours,
+            }
+
+            res.redirect(`/timesheets/${req.params.timesheetId}`);
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * POST /timesheets
+     *
+     * Creates a new timesheet by start date given from the input.
+     *
+     * Returns an object containing the newly created timesheet.
+     */
+    async createTimesheet(req, res) {
+        try {
+            // Checks if the timesheet for the current user and date time is created already
+            const allTimesheet = await Timesheet.findOne({
+                where: {
+                    startDate: req.body.startDate,
+                    userId: getUserId(req),
+                },
+            });
+
+            let timesheet;
+
+            // If the timesheet is not found, a new timesheet is created.
+            if (!allTimesheet) {
+                timesheet = await Timesheet.create(
+                    {
+                        status: 'Open',
+                        startDate: req.body.startDate,
+                        userId: getUserId(req),
+                    },
+                    {
+                        includes: {
+                            userId: getUserId(req),
+                        },
+                    }
+                );
+            }
+
+            if (timesheet) {
+                res.status(201).send(timesheet.toJSON());
+            } else {
+                res.status(409).send({error: 'Already created!'});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * DELETE /timesheets/:timesheetId
+     *
+     * Deletes the timesheet if existing.
+     *
+     * Returns a message that says if the deletion is successful.
+     */
+    async deleteTimesheet(req, res) {
+        // Checks if the id is valid
+        if (!uuidValidator(req.params.timesheetId)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
+        try {
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet) {
+                await Timesheet.destroy({
+                    where: {
+                        id: timesheet.id,
+                    },
                 });
-              }
+                res.status(201).send({success: 'Deleted successfully!'});
+            } else {
+                res.status(409).json({error: "Timesheet doesn't exist!"});
             }
-          }
+        } catch (err) {
+            res.status(403).json(err);
         }
-      }
-
-      res.redirect(`/timesheets/${req.params.timesheetId}`);
-    } catch (err) {
-      res.status(403).json(err);
-    }
-  }
-
-  async createTimesheet(req, res) {
-    try {
-      // Finds if the user already has a timesheet for this week
-      const allTimesheet = await Timesheet.findOne({
-        where: {
-          startDate: req.body.startDate,
-          userId: getUserId(req),
-        },
-      });
-
-      let timesheet;
-
-      if (!allTimesheet) {
-        timesheet = await Timesheet.create(
-          {
-            status: 'Open',
-            startDate: req.body.startDate,
-            userId: getUserId(req),
-          },
-          {
-            includes: {
-              userId: getUserId(req),
-            },
-          }
-        );
-      }
-
-      if (timesheet) {
-        res.status(201).send(timesheet.toJSON());
-      } else {
-        res.status(409).send({ error: 'Already created!' });
-      }
-    } catch (err) {
-      res.status(403).json(err);
-    }
-  }
-
-  async deleteTimesheet(req, res) {
-    // Checks if the id is valid
-    if (!uuidValidator(req.params.timesheetId)) {
-      res.status(404).send({ error: 'Invalid timesheet id!' });
-      return;
     }
 
-    try {
-      // Finds one by id.
-      const timesheet = await Timesheet.findByPk(req.params.timesheetId);
-
-      if (timesheet) {
-        await Timesheet.destroy({
-          where: {
-            id: timesheet.id,
-          },
-        });
-        res.status(201).send({ success: 'Deleted successfully!' });
-      } else {
-        res.status(409).json({ error: "Timesheet doesn't exist!" });
-      }
-    } catch (err) {
-      res.status(403).json(err);
+    /**
+     * GET /timesheets/entries/days/:timesheetEntryId
+     *
+     * Helping function for development environment.
+     *
+     * Returns all days for the given timesheet entry.
+     */
+    async getTimesheetEntryDays(req, res) {
+        try {
+            const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
+            const days = await entry.getDays();
+            res.status(200).send({entry, days});
+        } catch (err) {
+            res.status(500).send({error: err});
+        }
     }
-  }
-
-  async getTimesheetEntryDays(req, res) {
-    try {
-      const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
-      const days = await entry.getDays();
-      res.status(200).send({ entry, days });
-    } catch (err) {
-      res.status(500).send({ error: err });
-    }
-  }
 }
 
 module.exports = new TimesheetController();
