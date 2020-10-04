@@ -4,47 +4,43 @@ import { BsTrash2Fill } from "react-icons/bs";
 import { StyledCol, EntryRow } from "./EditTimesheetStyledComponents";
 import { NumberInput } from "../../components/generic/NumberInput";
 import { DeleteBtn } from "./EditTimesheetStyledComponents";
-import { updateDay } from "../../redux/slices/timesheet";
+import {
+  updateDay,
+  updateProject,
+  updateTask,
+} from "../../redux/slices/timesheet";
 import { projects } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { ProjectOption } from "./components/ProjectOption";
 import { format, addDays } from "date-fns";
 
-export const Entry = ({
-  timesheetId,
-  entry,
-  entryId,
-  entryIndex,
-  startDate,
-}) => {
+export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
   const [day, month, year] = startDate.split("-");
   const dispatch = useDispatch();
   const projectIds = useSelector((state) => state.projects.ids);
   const [project, setProject] = useState(entry.data.projectId);
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
-  const [task, setTask] = useState(tasks[0].id);
+  const [task, setTask] = useState(entry.data.taskId);
 
-  useEffect(() => {
-    console.log(tasks);
-  }, [project, dispatch]);
-
-  const onChangeHandler = (e, dayDate = false, localProject, localTask) => {
-    // console.log(e.target.value);
-    let hours = false;
-
-    if (typeof e?.target?.value === "number") {
-      hours = e?.target?.value;
-    }
+  const onChangeHandler = (e, dayDate) => {
     dispatch(
       updateDay({
         timesheetId,
         entryIndex,
         dayDate,
-        hours: hours,
-        taskId: localTask,
-        projectId: localProject,
+        hours: e.target.value,
       })
     );
+  };
+
+  const onProjectChange = (e) => {
+    dispatch(
+      updateProject({ projectId: e.target.value, entryIndex, timesheetId })
+    );
+  };
+
+  const onTaskChange = (e) => {
+    dispatch(updateTask({ taskId: e.target.value, entryIndex, timesheetId }));
   };
 
   return (
@@ -61,18 +57,16 @@ export const Entry = ({
           id="project"
           onChange={(event) => {
             setProject(event.target.value);
-            onChangeHandler(event, false, event.target.value, tasks[0]);
+            onProjectChange(event);
           }}
         >
-          <option disabled hidden selected>
-            Select option
-          </option>
+          {!project && (
+            <option disabled hidden selected>
+              Select option
+            </option>
+          )}
           {projectIds.map((id) => (
-            <ProjectOption
-              key={id}
-              projectId={id}
-              selectedId={entry.projectId}
-            />
+            <ProjectOption key={id} projectId={id} selectedId={project} />
           ))}
         </select>
       </Col>
@@ -81,14 +75,21 @@ export const Entry = ({
           id="task"
           onChange={(event) => {
             setTask(event.target.value);
-            onChangeHandler(event, false, project, event.target.value);
+            onTaskChange(event);
+            // onChangeEntryData(event)
           }}
         >
-          <option value={"select task"} disabled hidden selected>
-            Select task
-          </option>
+          {!task && (
+            <option disabled hidden selected>
+              Select option
+            </option>
+          )}
           {tasks &&
-            tasks.map((task) => <option value={task.id}>{task.name}</option>)}
+            tasks.map((item) => (
+              <option value={item.id} selected={item.id === task}>
+                {item.name}
+              </option>
+            ))}
         </select>
       </Col>
       <Col as={StyledCol}>

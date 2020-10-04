@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import { StyledCol, HeaderFooterRow } from "./EditTimesheetStyledComponents";
 
-export const TableFooter = ({ entries }) => {
+export const TableFooter = ({ entries, startDate }) => {
   const [hours, setHours] = useState({
     mon: 0,
     tue: 0,

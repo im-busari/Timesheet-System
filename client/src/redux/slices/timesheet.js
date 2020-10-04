@@ -73,28 +73,16 @@ const { reducer, actions } = createSlice({
     },
 
     addEmptyEntry: (state, action) => {
-      // const timesheetId = action.payload;
-      //
-      // if (!state.byId[timesheetId]) {
-      //   state.ids.push(timesheetId);
-      //   state.byId[timesheetId] = {}
-      // }
-      //
-      // if (!state.byId[timesheetId].entries) {
-      //   state.byId[timesheetId].entries = [];
-      // }
-      //
-      // state.byId[timesheetId].entries.push({
-      //   projectId: null,
-      //   taskId: null,
-      //   mon: 0,
-      //   tue: 0,
-      //   wed: 0,
-      //   thu: 0,
-      //   fri: 0,
-      //   sat: 0,
-      //   sun: 0,
-      // });
+      const { timesheetId, projectId } = action.payload;
+      let data = [];
+      console.log(projectId);
+      state.byId[timesheetId].entries.push({
+        data: {
+          projectId: projectId,
+          taskId: null,
+        },
+        days: [],
+      });
     },
     updateDayState: (state, action) => {
       const {
@@ -127,8 +115,8 @@ const { reducer, actions } = createSlice({
         state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
         state.byId[timesheetId].entries[entryIndex].data.taskId = taskId;
 
-        console.log(timesheetId);
-        console.log("Timesheet Entries", timesheetEntries);
+        // console.log(timesheetId);
+        // console.log("Timesheet Entries", timesheetEntries);
 
         let isChanged = false;
         if (dayDate) {
@@ -153,6 +141,17 @@ const { reducer, actions } = createSlice({
         }
       }
       // loop entries and compare with entryId
+    },
+
+    updateTask: (state, action) => {
+      const { timesheetId, entryIndex, taskId } = action.payload;
+      console.log(taskId);
+      state.byId[timesheetId].entries[entryIndex].data.taskId = taskId;
+    },
+    updateProject: (state, action) => {
+      const { timesheetId, entryIndex, projectId } = action.payload;
+      console.log(projectId);
+      state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
     },
 
     clearCurrent: (state) => {
@@ -227,9 +226,9 @@ export const deleteTimesheet = ({ id }) => {
   };
 };
 
-export const addEmptyEntry = ({ timesheetId }) => {
+export const addEmptyEntry = ({ timesheetId, projectId }) => {
   return (dispatch) => {
-    dispatch(actions.addEmptyEntry(timesheetId));
+    dispatch(actions.addEmptyEntry({ timesheetId, projectId }));
   };
 };
 
@@ -258,5 +257,17 @@ export const updateDay = ({
         taskId,
       })
     );
+  };
+};
+
+export const updateProject = ({ projectId, entryIndex, timesheetId }) => {
+  return (dispatch) => {
+    dispatch(actions.updateProject({ projectId, entryIndex, timesheetId }));
+  };
+};
+
+export const updateTask = ({ taskId, entryIndex, timesheetId }) => {
+  return (dispatch) => {
+    dispatch(actions.updateTask({ taskId, entryIndex, timesheetId }));
   };
 };

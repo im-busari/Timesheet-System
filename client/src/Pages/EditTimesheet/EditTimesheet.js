@@ -13,6 +13,9 @@ import { Button } from "../../components/generic/Button";
 import { Container } from "react-bootstrap";
 import { TableHeader } from "./TableHeader";
 import { Entry } from "./Entry";
+import { TableFooter } from "./TableFooter";
+import { DefaultContext } from "react-icons";
+import { DefaultEntry } from "./DefaultEntry";
 
 export const EditTimesheet = () => {
   const history = useHistory();
@@ -80,14 +83,15 @@ export const EditTimesheet = () => {
             {currentTimesheet &&
               currentTimesheet.entries.map((entry, index) => (
                 <Entry
-                  key={entry.data.id}
+                  key={index}
                   timesheetId={timesheetId}
-                  entryId={entry.data.id}
                   entryIndex={index}
                   entry={entry}
                   startDate={currentTimesheet.data.startDate}
                 />
               ))}
+            <DefaultEntry timesheetId={timesheetId} />
+            {/*<TableFooter entries={currentTimesheet?.entries?.days} />*/}
           </Container>
         </MainContainer>
       )}
