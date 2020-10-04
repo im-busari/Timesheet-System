@@ -8,7 +8,10 @@ import {
 import { Title } from "../../components/generic/Title";
 import { startOfWeek, subWeeks, addWeeks, format, endOfWeek } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
-import { createTimesheet } from "../../redux/slices/timesheet";
+import {
+  clearCurrentTimesheet,
+  createTimesheet,
+} from "../../redux/slices/timesheet";
 import { useHistory } from "react-router-dom";
 
 export const CreateTimesheet = () => {
@@ -22,15 +25,16 @@ export const CreateTimesheet = () => {
 
   const dispatch = useDispatch();
 
-  // const createdTimesheet = useSelector(
-  //   (state) => state.timesheets.currentTimesheetId
-  // );
+  const createdTimesheet = useSelector(
+    (state) => state.timesheets.currentTimesheetId
+  );
 
-  // React.useEffect(() => {
-  //   if (createdTimesheet !== null) {
-  //     history.push(`/timesheets/edit/${createdTimesheet}`);
-  //   }
-  // }, [createdTimesheet]);
+  React.useEffect(() => {
+    if (createdTimesheet !== null) {
+      history.push(`/timesheets/edit/${createdTimesheet}`);
+      dispatch(clearCurrentTimesheet());
+    }
+  }, [dispatch, history, createdTimesheet]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,7 +44,6 @@ export const CreateTimesheet = () => {
     }
 
     dispatch(createTimesheet({ startDate: monday }));
-    history.push("/");
   };
 
   /* Mondays for the available timesheets */

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { TableData, LongTableData } from "./styles";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   addDays,
   format as formatDate,
   parse as parseDate,
   endOfWeek,
 } from "date-fns";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTimesheet } from "../../redux/slices/timesheet";
 
 export const TimesheetListItem = ({ timesheetId }) => {
   const timesheet = useSelector((state) => state.timesheets.byId[timesheetId]);
@@ -26,6 +27,9 @@ export const TimesheetListItem = ({ timesheetId }) => {
     "dd-MM"
   );
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   return (
     <tr>
       <TableData>{startDateFormatted}</TableData>
@@ -41,10 +45,11 @@ export const TimesheetListItem = ({ timesheetId }) => {
         <Button
           variant="danger"
           disabled={isSubmitted}
-          // onClick={() => {
-          //     // eslint-disable-next-line no-undef
-          //   onDelete(timesheetId);
-          // }}
+          onClick={() => {
+            console.log("Dispatch delete!");
+            dispatch(deleteTimesheet({ timesheetId }));
+            history.push("/");
+          }}
         >
           Delete
         </Button>

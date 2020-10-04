@@ -7,6 +7,8 @@ const initialState = {
   ids: [],
   byId: {},
   error: null,
+  isDeleting: false,
+  currentTimesheetId: null,
 };
 
 // const timesheetSchema = new schema.Entity("timesheets");
@@ -50,6 +52,7 @@ const { reducer, actions } = createSlice({
 
       state.error = null;
       state.byId[timesheetId] = action.payload;
+      state.currentTimesheetId = timesheetId;
     },
     createError: (state, action) => {
       return { ...state, error: action.payload };
@@ -63,12 +66,16 @@ const { reducer, actions } = createSlice({
     updateError: (state, action) => {
       return { ...state, error: action.payload };
     },
+    deleteStart: (state, action) => {
+      state.isDeleting = true;
+    },
     delete: (state, action) => {
       const timesheetId = action.payload.timesheetId;
 
-      if (state.byId[timesheetId]) {
-        delete state.byId[timesheetId];
-      }
+      delete state.byId[timesheetId];
+      state.ids = state.ids.filter((id) => id !== timesheetId);
+
+      state.isDeleting = false;
     },
     deleteError: (state, action) => {
       return { ...state, error: action.payload };
@@ -234,12 +241,12 @@ export const updateTimesheet = ({ currentTimesheet, submitted }) => {
   };
 };
 
-export const deleteTimesheet = ({ timesheetId }, history) => {
+export const deleteTimesheet = ({ timesheetId }) => {
   return async (dispatch) => {
     try {
+      dispatch(actions.deleteStart());
       await timesheet.del.delete({ timesheetId: timesheetId });
-      dispatch(actions.delete(timesheetId));
-      history.push("/");
+      dispatch(actions.delete({ timesheetId }));
     } catch (error) {
       dispatch(actions.deleteError(error.message));
     }

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const StyledInput = styled.input`
-  width: 40%;
+  width: 33%;
   text-align: center;
 
   /* Remove input arrows */

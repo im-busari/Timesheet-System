@@ -29,7 +29,7 @@ export const Entry = ({
           </DeleteBtn>
         )}
       </Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
+      <Col as={StyledCol}>
         <select
           id="project"
           onChange={(event) => {
@@ -47,7 +47,7 @@ export const Entry = ({
           ))}
         </select>
       </Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
+      <Col as={StyledCol}>
         <select id="task">
           {tasks &&
             tasks.map((task) => <option value={task.id}>{task.name}</option>)}

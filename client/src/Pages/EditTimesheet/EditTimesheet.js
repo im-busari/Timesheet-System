@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -30,6 +30,7 @@ export const EditTimesheet = () => {
   const currentTimesheet = useSelector(
     (state) => state.timesheets.byId[timesheetId]
   );
+
   const currentEntries = useSelector(
     (state) => state.timesheets.byId[timesheetId]?.entries
   );
@@ -40,44 +41,49 @@ export const EditTimesheet = () => {
         <MainContainer>
           <Header>
             <Information>
-              <WeekInfo>{`Timesheet for week ${currentTimesheet.data.startDate
+              <WeekInfo>{`Timesheet for week ${currentTimesheet?.data?.startDate
                 .split("-")
                 .join(".")}`}</WeekInfo>
               <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
             </Information>
 
-            <BtnsContainer>
-              <Button
-                backgroundColor="danger"
-                text="Delete"
-                id="delete"
-                onClick={() => {
-                  console.log("DIspatch delete!");
-                  dispatch(deleteTimesheet({ timesheetId }, history));
-                }}
-              />
-              <Button
-                backgroundColor="orange"
-                text="Save"
-                id="save"
-                onClick={() => {
-                  dispatch(
-                    updateTimesheet({ currentTimesheet, submitted: false })
-                  );
-                  history.push("/");
-                }}
-              />
-              <Button
-                backgroundColor="green"
-                text="Submit"
-                onClick={() => {
-                  dispatch(
-                    updateTimesheet({ currentTimesheet, submitted: true })
-                  );
-                  history.push("/");
-                }}
-              />
-            </BtnsContainer>
+            {currentTimesheet.data.status !== "Submitted" ? (
+              <BtnsContainer>
+                <Button
+                  backgroundColor="danger"
+                  text="Delete"
+                  id="delete"
+                  onClick={() => {
+                    console.log("Dispatch delete!");
+                    dispatch(deleteTimesheet({ timesheetId }));
+                    history.push("/");
+                  }}
+                />
+                <Button
+                  backgroundColor="orange"
+                  text="Save"
+                  id="save"
+                  onClick={() => {
+                    dispatch(
+                      updateTimesheet({ currentTimesheet, submitted: false })
+                    );
+                    history.push("/");
+                  }}
+                />
+                <Button
+                  backgroundColor="green"
+                  text="Submit"
+                  onClick={() => {
+                    dispatch(
+                      updateTimesheet({ currentTimesheet, submitted: true })
+                    );
+                    history.push("/");
+                  }}
+                />
+              </BtnsContainer>
+            ) : (
+              "Submitted"
+            )}
           </Header>
           <Container fluid>
             <TableHeader startDate={currentTimesheet.data.startDate} />
@@ -85,6 +91,7 @@ export const EditTimesheet = () => {
             {currentTimesheet &&
               currentTimesheet.entries.map((entry, index) => (
                 <Entry
+                  disabled={currentTimesheet.data.status === "Submitted"}
                   key={index}
                   timesheetId={timesheetId}
                   entryIndex={index}
@@ -92,8 +99,13 @@ export const EditTimesheet = () => {
                   startDate={currentTimesheet.data.startDate}
                 />
               ))}
-            <DefaultEntry timesheetId={timesheetId} />
-            {/*<TableFooter entries={currentTimesheet?.entries?.days} />*/}
+            {currentTimesheet.data.status !== "Submitted" && (
+              <DefaultEntry timesheetId={timesheetId} />
+            )}
+            <TableFooter
+              entries={currentEntries}
+              startDate={currentTimesheet.data.startDate}
+            />
           </Container>
         </MainContainer>
       )}

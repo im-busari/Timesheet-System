@@ -13,22 +13,19 @@ export const AllTimesheetsPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProjects());
     dispatch(getTimesheetsForUser());
+    dispatch(getAllProjects());
   }, [dispatch]);
 
   const timesheetIds = useSelector((state) => state.timesheets.ids);
 
-  const error = useSelector((state) => state.timesheets.error);
+  useEffect(() => {
+    dispatch(getTimesheetsForUser());
+  }, [dispatch, timesheetIds]);
 
   return (
     <Layout>
-      {error & !error?.includes("404") ? (
-        <div>
-          <p>Seems like something has gone wrong.</p>
-          <p>Our bad.</p>
-        </div>
-      ) : (
+      {timesheetIds.length ? (
         <div>
           <Table bordered hover>
             <thead>
@@ -44,17 +41,11 @@ export const AllTimesheetsPage = () => {
               {timesheetIds.map((id) => (
                 <TimesheetListItem key={id} timesheetId={id} />
               ))}
-              {/*{timesheetIds.length ? <TimesheetPreview /> : <NoTimesheetMessage />*/}
-              {/*timesheetIds.map((id) => (*/}
-              {/*  <TimesheetListItem*/}
-              {/*      timesheetId={id}*/}
-              {/*  />*/}
-              {/*)*/}
-              {/*}*/}
-              {/*/!*{allTimesheets}*!/*/}
             </tbody>
           </Table>
         </div>
+      ) : (
+        <NoTimesheetMessage />
       )}
     </Layout>
   );

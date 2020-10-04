@@ -16,7 +16,13 @@ import { ProjectOption } from "./components/ProjectOption";
 import { format, addDays } from "date-fns";
 import { isInteger } from "formik";
 
-export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
+export const Entry = ({
+  disabled,
+  timesheetId,
+  entry,
+  entryIndex,
+  startDate,
+}) => {
   const [day, month, year] = startDate.split("-");
   const dispatch = useDispatch();
   const projectIds = useSelector((state) => state.projects.ids);
@@ -79,7 +85,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
   return (
     <Row as={EntryRow}>
       <Col as={StyledCol}>
-        {project !== null && (
+        {project !== null && !disabled && (
           <DeleteBtn
             onClick={() => {
               dispatch(
@@ -97,9 +103,16 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
           </DeleteBtn>
         )}
       </Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
+      <Col as={StyledCol} sm={3} md={3} lg={3} xl={3}>
         <select
+          style={{
+            width: "85%",
+            overflow: "hidden",
+            whiteSpace: "pre",
+            textOverflow: "ellipsis",
+          }}
           id="project"
+          disabled={disabled}
           onChange={(event) => {
             setProject(event.target.value);
             onProjectChange(event);
@@ -113,10 +126,18 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
           {projectIds.map((id) => (
             <ProjectOption key={id} projectId={id} selectedId={project} />
           ))}
+          }
         </select>
       </Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
+      <Col as={StyledCol}>
         <select
+          style={{
+            width: "100%",
+            overflow: "hidden",
+            whiteSpace: "pre",
+            textOverflow: "ellipsis",
+          }}
+          disabled={disabled}
           id="task"
           onChange={(event) => {
             setTask(event.target.value);
@@ -140,6 +161,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="mon"
+          disabled={disabled}
           defaultValue={dateObj[monday]}
           onChange={(event) => {
             onChangeHandler(event, monday);
@@ -150,6 +172,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="tue"
+          disabled={disabled}
           defaultValue={dateObj[tuesday]}
           onChange={(event) => {
             onChangeHandler(event, tuesday);
@@ -160,6 +183,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="wed"
+          disabled={disabled}
           defaultValue={dateObj[wednesday]}
           onChange={(event) => {
             onChangeHandler(event, wednesday);
@@ -170,6 +194,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="thu"
+          disabled={disabled}
           defaultValue={dateObj[thursday]}
           onChange={(event) => {
             onChangeHandler(event, thursday);
@@ -180,6 +205,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="fri"
+          disabled={disabled}
           defaultValue={dateObj[friday]}
           onChange={(event) => {
             onChangeHandler(event, friday);
@@ -190,6 +216,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="sat"
+          disabled={disabled}
           defaultValue={dateObj[saturday]}
           onChange={(event) => {
             onChangeHandler(event, saturday);
@@ -200,6 +227,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="sun"
+          disabled={disabled}
           defaultValue={dateObj[sunday]}
           onChange={(event) => {
             onChangeHandler(event, sunday);

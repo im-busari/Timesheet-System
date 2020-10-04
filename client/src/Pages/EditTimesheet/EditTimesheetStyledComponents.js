@@ -24,6 +24,7 @@ export const BtnsContainer = styled.div`
 export const HeaderFooterRow = styled(Row)`
   background-color: var(--blue);
   color: var(--white);
+  padding: 0.5rem;
 `;
 export const EntryRow = styled(Row)`
   background-color: var(--gray);
