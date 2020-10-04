@@ -64,10 +64,10 @@ const { reducer, actions } = createSlice({
       return { ...state, error: action.payload };
     },
     delete: (state, action) => {
-      const timesheetId = action.payload;
+      const timesheetId = action.payload.timesheetId;
 
-      if (state.timesheets[timesheetId]) {
-        delete state.timesheets[timesheetId];
+      if (state.byId[timesheetId]) {
+        delete state.byId[timesheetId];
       }
     },
     deleteError: (state, action) => {
@@ -149,6 +149,27 @@ const { reducer, actions } = createSlice({
       state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
     },
 
+    // TODO: COmplete
+    deleteEntry: (state, action) => {
+      console.log("deleteAction");
+
+      const timesheetId = action.payload.timesheetId;
+      const project = action.payload.project;
+      const task = action.payload.task;
+
+      // state.byId[timesheetId].entries = [
+      //   ...state.byId[timesheetId].entries.filter((item) => {
+      //     console.log(JSON.stringify(item, undefined, 2));
+      //     return item.data.projectId !== project && item.data.taskId !== task;
+      //   }),
+      // ];
+      // console.log(
+      //   JSON.stringify(state.byId[timesheetId].entries, undefined, 2)
+      // );
+      // console.log(entryIndex);
+      // state.byId[timesheetId].entries.splice(entryIndex, 0);
+    },
+
     clearCurrent: (state) => {
       return { ...state, currentTimesheetId: null };
     },
@@ -213,11 +234,12 @@ export const updateTimesheet = ({ currentTimesheet, submitted }) => {
   };
 };
 
-export const deleteTimesheet = ({ id }) => {
+export const deleteTimesheet = ({ timesheetId }, history) => {
   return async (dispatch) => {
     try {
-      await timesheet.del.delete({ timesheetId: id });
-      dispatch(actions.delete(id));
+      await timesheet.del.delete({ timesheetId: timesheetId });
+      dispatch(actions.delete(timesheetId));
+      history.push("/");
     } catch (error) {
       dispatch(actions.deleteError(error.message));
     }
@@ -267,5 +289,23 @@ export const updateProject = ({ projectId, entryIndex, timesheetId }) => {
 export const updateTask = ({ taskId, entryIndex, timesheetId }) => {
   return (dispatch) => {
     dispatch(actions.updateTask({ taskId, entryIndex, timesheetId }));
+  };
+};
+
+export const deleteTimesheetEntry = ({
+  entryId,
+  task,
+  project,
+  timesheetId,
+}) => {
+  return async (dispatch) => {
+    try {
+      if (entryId) {
+        await timesheet.del.deleteEntry({ timesheetEntryId: entryId });
+      }
+      dispatch(actions.deleteEntry({ timesheetId, task, project }));
+    } catch (error) {
+      dispatch(actions.deleteError(error.message));
+    }
   };
 };

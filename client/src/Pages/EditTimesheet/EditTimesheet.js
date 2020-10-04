@@ -16,7 +16,7 @@ import { Entry } from "./Entry";
 import { TableFooter } from "./TableFooter";
 import { DefaultContext } from "react-icons";
 import { DefaultEntry } from "./DefaultEntry";
-import { updateTimesheet } from "../../redux/slices/timesheet";
+import { deleteTimesheet, updateTimesheet } from "../../redux/slices/timesheet";
 
 export const EditTimesheet = () => {
   const history = useHistory();
@@ -33,20 +33,7 @@ export const EditTimesheet = () => {
   const currentEntries = useSelector(
     (state) => state.timesheets.byId[timesheetId]?.entries
   );
-  // console.log(currentTimesheet);
 
-  // entry.data
-  // entry.days => another for each loop -> fix seeders days date ---- TODO:
-
-  if (currentEntries) {
-    currentEntries.forEach((entry) => {
-      console.log(entry.data);
-    });
-  }
-
-  //    list entries from state
-  // edit (small button) form => project on change add new entry to state with given projectId
-  //
   return (
     <>
       {timesheetId && (
@@ -64,22 +51,31 @@ export const EditTimesheet = () => {
                 backgroundColor="danger"
                 text="Delete"
                 id="delete"
-                onClick={() => console.log("Delete")}
+                onClick={() => {
+                  console.log("DIspatch delete!");
+                  dispatch(deleteTimesheet({ timesheetId }, history));
+                }}
               />
               <Button
                 backgroundColor="orange"
                 text="Save"
                 id="save"
-                onClick={() =>
+                onClick={() => {
                   dispatch(
                     updateTimesheet({ currentTimesheet, submitted: false })
-                  )
-                }
+                  );
+                  history.push("/");
+                }}
               />
               <Button
                 backgroundColor="green"
                 text="Submit"
-                onClick={() => console.log("Submit")}
+                onClick={() => {
+                  dispatch(
+                    updateTimesheet({ currentTimesheet, submitted: true })
+                  );
+                  history.push("/");
+                }}
               />
             </BtnsContainer>
           </Header>

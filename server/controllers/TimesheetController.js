@@ -112,11 +112,16 @@ class TimesheetController {
           // console.log(newTimesheetEntry);
           if (entries[entry].days) {
             for (const index in entries[entry].days) {
-              await Day.create({
-                timesheetEntryId: newTimesheetEntry.id,
-                date: entries[entry].days[index].date,
-                hours: entries[entry].days[index].hours,
-              });
+              if (
+                entries[entry].days[index].hours > 0.25 &&
+                entries[entry].days[index].hours <= 24
+              ) {
+                await Day.create({
+                  timesheetEntryId: newTimesheetEntry.id,
+                  date: entries[entry].days[index].date,
+                  hours: entries[entry].days[index].hours,
+                });
+              }
             }
           }
         } else {
@@ -143,6 +148,17 @@ class TimesheetController {
                 // check if stored information is different from req.body.entries.day[index]
                 if (entries[entry].days[index].date !== updateDay.date) {
                   updateDay.date = entries[entry].days[index].date;
+                }
+                if (
+                  !entries[entry].days[index].hours ||
+                  entries[entry].days[index].hours < 0.25
+                ) {
+                  await Day.destroy({
+                    where: {
+                      id: updateDay.id,
+                    },
+                  });
+                  continue;
                 }
                 if (entries[entry].days[index].hours !== updateDay.hours) {
                   updateDay.hours = entries[entry].days[index].hours;
@@ -238,6 +254,28 @@ class TimesheetController {
       const days = await entry.getDays();
       res.status(200).send({ entry, days });
     } catch (err) {
+      res.status(500).send({ error: err });
+    }
+  }
+
+  async deleteTimesheetEntry(req, res) {
+    try {
+      const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
+
+      console.log(entry);
+      if (entry) {
+        await TimesheetEntry.destroy({
+          where: {
+            id: entry.id,
+          },
+        });
+
+        res.status(200).send({ success: 'Deleted successfully!' });
+      } else {
+        res.status(409).json({ error: "Timesheet doesn't exist!" });
+      }
+    } catch (err) {
+      console.log(err);
       res.status(500).send({ error: err });
     }
   }

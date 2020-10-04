@@ -39,4 +39,8 @@ export const del = {
     const res = await axios.delete(`/timesheets/${timesheetId}`);
     return res.data;
   },
+  deleteEntry: async ({ timesheetEntryId }) => {
+    const res = await axios.delete(`/timesheets/entries/${timesheetEntryId}`);
+    return res.data;
+  },
 };

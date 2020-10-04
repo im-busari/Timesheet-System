@@ -8,11 +8,13 @@ import {
   updateDay,
   updateProject,
   updateTask,
+  deleteTimesheetEntry,
 } from "../../redux/slices/timesheet";
 import { projects } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { ProjectOption } from "./components/ProjectOption";
 import { format, addDays } from "date-fns";
+import { isInteger } from "formik";
 
 export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
   const [day, month, year] = startDate.split("-");
@@ -22,16 +24,47 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
   const [task, setTask] = useState(entry.data.taskId);
 
+  const dateObj = entry.days.reduce((acc, current) => {
+    startDate = current.date;
+    acc[startDate] = current.hours;
+    return acc;
+  }, {});
+  // console.log(dateObj);
+
+  const formatDays = (increaseInt) => {
+    return format(
+      addDays(new Date(year, month - 1, day), increaseInt),
+      "dd-MM-yyyy"
+    );
+  };
+
+  const monday = formatDays(0);
+  const tuesday = formatDays(1);
+  const wednesday = formatDays(2);
+  const thursday = formatDays(3);
+  const friday = formatDays(4);
+  const saturday = formatDays(5);
+  const sunday = formatDays(6);
+
   const onChangeHandler = (e, dayDate) => {
+    if (!isInteger(e.target.value)) {
+      e.target.value = null;
+      console.log("Inside func", typeof e.target.value);
+    }
+    const hours = +e.target.value;
     dispatch(
       updateDay({
         timesheetId,
         entryIndex,
         dayDate,
-        hours: e.target.value,
+        hours,
       })
     );
   };
+
+  useEffect(() => {
+    console.log(entryIndex);
+  }, [entryIndex]);
 
   const onProjectChange = (e) => {
     dispatch(
@@ -47,7 +80,19 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
     <Row as={EntryRow}>
       <Col as={StyledCol}>
         {project !== null && (
-          <DeleteBtn onClick={() => console.log("Delete Btb")}>
+          <DeleteBtn
+            onClick={() => {
+              dispatch(
+                deleteTimesheetEntry({
+                  entryId: entry.data.id,
+                  project,
+                  task,
+                  entryIndex,
+                  timesheetId,
+                })
+              );
+            }}
+          >
             <BsTrash2Fill />
           </DeleteBtn>
         )}
@@ -86,7 +131,7 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
           )}
           {tasks &&
             tasks.map((item) => (
-              <option value={item.id} selected={item.id === task}>
+              <option key={item.id} value={item.id} selected={item.id === task}>
                 {item.name}
               </option>
             ))}
@@ -95,91 +140,70 @@ export const Entry = ({ timesheetId, entry, entryIndex, startDate }) => {
       <Col as={StyledCol}>
         <NumberInput
           id="mon"
+          defaultValue={dateObj[monday]}
           onChange={(event) => {
-            const dayDate = format(
-              new Date(year, month - 1, day),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(event, dayDate);
-            console.log(dayDate);
+            onChangeHandler(event, monday);
+            console.log(monday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="tue"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 1),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[tuesday]}
+          onChange={(event) => {
+            onChangeHandler(event, tuesday);
+            console.log(tuesday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="wed"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 2),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[wednesday]}
+          onChange={(event) => {
+            onChangeHandler(event, wednesday);
+            console.log(wednesday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="thu"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 3),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[thursday]}
+          onChange={(event) => {
+            onChangeHandler(event, thursday);
+            console.log(thursday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="fri"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 4),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[friday]}
+          onChange={(event) => {
+            onChangeHandler(event, friday);
+            console.log(friday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="sat"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 5),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[saturday]}
+          onChange={(event) => {
+            onChangeHandler(event, saturday);
+            console.log(saturday);
           }}
         />
       </Col>
       <Col as={StyledCol}>
         <NumberInput
           id="sun"
-          onChange={(e) => {
-            const dayDate = format(
-              addDays(new Date(year, month - 1, day), 6),
-              "dd-MM-yyyy"
-            );
-            onChangeHandler(e, dayDate);
-            console.log(dayDate);
+          defaultValue={dateObj[sunday]}
+          onChange={(event) => {
+            onChangeHandler(event, sunday);
+            console.log(sunday);
           }}
         />
       </Col>
