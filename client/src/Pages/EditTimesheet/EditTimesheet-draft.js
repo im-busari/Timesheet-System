@@ -23,6 +23,7 @@ import {
   getTimesheetsForUser,
 } from "../../redux/slices/timesheet";
 import { Formik, Form, Field, FieldArray } from "formik";
+import { getAllProjects } from "../../redux/slices/project";
 
 export const EditTimesheet = () => {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ export const EditTimesheet = () => {
     (async () => {
       setIsLoading(true);
       await getTimesheetsForUser()(dispatch);
+      dispatch(getAllProjects());
       setIsLoading(false);
     })();
 

@@ -16,8 +16,10 @@ export const Entry = ({
   handleEntryDelete,
 }) => {
   const projectIds = useSelector((state) => state.projects.ids);
-  console.log(projectIds);
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState(entry.data.projectId);
+  const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
+  console.log(project);
+  console.log(tasks);
   // const { projectId } = entry.data
   // const { taskId } = entry.data
 
@@ -60,12 +62,8 @@ export const Entry = ({
       </Col>
       <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
         <select id="task">
-          <option selected disabled hidden>
-            Choose task...
-          </option>
-          <option value="task one">Task One</option>
-          <option value="task two">Task Two</option>
-          <option value="task three">Task Three</option>
+          {tasks &&
+            tasks.map((task) => <option value={task.id}>{task.name}</option>)}
         </select>
       </Col>
       <Col as={StyledCol}>

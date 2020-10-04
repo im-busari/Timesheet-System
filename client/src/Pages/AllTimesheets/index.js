@@ -14,7 +14,6 @@ export const AllTimesheetsPage = () => {
 
   useEffect(() => {
     dispatch(getTimesheetsForUser());
-    dispatch(getAllProjects());
   }, [dispatch]);
 
   const timesheetIds = useSelector((state) => state.timesheets.ids);
