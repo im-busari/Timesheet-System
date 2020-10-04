@@ -29,19 +29,18 @@ export const EditTimesheet = () => {
   const { timesheetId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log("live share is not a function ;)");
-
   const authUserId = useSelector((state) => state.auth.userId);
   const authUserName = useSelector(
     (state) => state.users.usersById[authUserId]?.username
   );
 
   const currentTimesheet = useSelector(
-    (state) => state.timesheets.timesheets[timesheetId]
+    (state) => state.timesheets.byId[timesheetId]
   );
+  console.log(currentTimesheet);
 
   const currentTimesheetEntries = useSelector(
-    (state) => state.timesheets?.timesheets[timesheetId]?.entries
+    (state) => state.timesheets.byId[timesheetId]?.entries
   );
 
   useEffect(() => {
@@ -54,17 +53,18 @@ export const EditTimesheet = () => {
     return () => dispatch(clearCurrentTimesheet());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!currentTimesheetEntries?.length) {
-      dispatch(addEmptyEntry({ timesheetId }));
-    }
-  }, [currentTimesheetEntries, dispatch]);
+  // useEffect(() => {
+  //   if (!currentTimesheetEntries?.length) {
+  //     dispatch(addEmptyEntry({ timesheetId }));
+  //   }
+  // }, [currentTimesheetEntries, dispatch]);
 
   // const addNewEntry = (event, entryId) => {
   // 	event.persist();
   // 	dispatch(addEmptyEntry({timesheetId}))
   // }
 
+  //  TODO: Learn why is this
   function addNewEntry(event) {
     event.persist();
     dispatch(addEmptyEntry({ timesheetId }));
@@ -106,28 +106,25 @@ export const EditTimesheet = () => {
               return (
                 <Form>
                   <Container fluid>
-                    {
-                      currentTimesheetEntries && (
-                        <FieldArray name="entries">
-                          {(arrayHelpers) => {
-                            return currentTimesheetEntries.map((entry) => {
-                              return (
-                                <Entry
-                                  key={entry[0].data.id}
-                                  entryId={entry[0].data.id}
-                                  entry={entry[0]}
-                                  handleChange={() => {}}
-                                  handleEntryDelete={() => {}}
-                                  addEmptyEntry={addNewEntry}
-                                />
-                              );
-                            });
-                          }}
-                        </FieldArray>
-                      )
-
-                      /* <TableFooter entries={"zdr"} /> */
-                    }
+                    {currentTimesheetEntries && (
+                      <FieldArray name="entries">
+                        {(arrayHelpers) => {
+                          return currentTimesheetEntries.map((entry) => {
+                            console.log(entry.data.id);
+                            return (
+                              <Entry
+                                key={entry.data.id}
+                                entryId={entry.data.id}
+                                entry={entry}
+                                handleChange={() => {}}
+                                handleEntryDelete={() => {}}
+                                addEmptyEntry={addNewEntry}
+                              />
+                            );
+                          });
+                        }}
+                      </FieldArray>
+                    )}
                   </Container>
                 </Form>
               );

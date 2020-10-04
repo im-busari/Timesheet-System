@@ -5,6 +5,8 @@ import { StyledCol, EntryRow } from "./EditTimesheetStyledComponents";
 import { NumberInput } from "../../components/generic/NumberInput";
 import { DeleteBtn } from "./EditTimesheetStyledComponents";
 import { projects } from "../../api";
+import { useSelector } from "react-redux";
+import { ProjectOption } from "./components/ProjectOption";
 
 export const Entry = ({
   entry,
@@ -13,8 +15,9 @@ export const Entry = ({
   addEmptyEntry,
   handleEntryDelete,
 }) => {
+  const projectIds = useSelector((state) => state.projects.ids);
+  console.log(projectIds);
   const [project, setProject] = useState(null);
-
   // const { projectId } = entry.data
   // const { taskId } = entry.data
 
@@ -46,12 +49,13 @@ export const Entry = ({
             setProject(event.target.value);
           }}
         >
-          <option selected disabled hidden>
-            Enter project....
-          </option>
-          <option value="Project one">Project One</option>
-          <option value="project two">Project Two</option>
-          <option value="project three">Project Three</option>
+          {projectIds.map((id) => (
+            <ProjectOption
+              key={id}
+              projectId={id}
+              selectedId={entry.projectId}
+            />
+          ))}
         </select>
       </Col>
       <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>

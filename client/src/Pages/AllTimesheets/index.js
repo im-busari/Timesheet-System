@@ -1,13 +1,17 @@
 import React, { useEffect } from "react";
 import { Layout } from "../Layout";
-import { TimesheetPreview } from "../../components/TimesheetPreview";
+import { TimesheetPreview } from "../../components/TimesheetPreview-to-remove";
 import { useDispatch, useSelector } from "react-redux";
 import { getTimesheetsForUser } from "../../redux/slices/timesheet";
 import { getAllProjects } from "../../redux/slices/project";
 import { NoTimesheetMessage } from "../../components/NoTimesheetMessage";
+import { TableHeader } from "../../components/TimesheetPreview-to-remove/styles";
+import { TimesheetListItem } from "../../components/TimesheetListItem";
+import { Table } from "react-bootstrap";
 
 export const AllTimesheetsPage = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getTimesheetsForUser());
     dispatch(getAllProjects());
@@ -15,7 +19,7 @@ export const AllTimesheetsPage = () => {
 
   const timesheetIds = useSelector((state) => state.timesheets.ids);
 
-  const error = useSelector((state) => state.timesheets.getError);
+  const error = useSelector((state) => state.timesheets.error);
 
   return (
     <Layout>
@@ -26,7 +30,30 @@ export const AllTimesheetsPage = () => {
         </div>
       ) : (
         <div>
-          {timesheetIds.length ? <TimesheetPreview /> : <NoTimesheetMessage />}
+          <Table bordered hover>
+            <thead>
+              <tr>
+                <TableHeader>Start Date</TableHeader>
+                <TableHeader>End Date</TableHeader>
+                <TableHeader>Status</TableHeader>
+                <TableHeader>Update</TableHeader>
+                <TableHeader>Remove</TableHeader>
+              </tr>
+            </thead>
+            <tbody>
+              {timesheetIds.map((id) => (
+                <TimesheetListItem key={id} timesheetId={id} />
+              ))}
+              {/*{timesheetIds.length ? <TimesheetPreview /> : <NoTimesheetMessage />*/}
+              {/*timesheetIds.map((id) => (*/}
+              {/*  <TimesheetListItem*/}
+              {/*      timesheetId={id}*/}
+              {/*  />*/}
+              {/*)*/}
+              {/*}*/}
+              {/*/!*{allTimesheets}*!/*/}
+            </tbody>
+          </Table>
         </div>
       )}
     </Layout>

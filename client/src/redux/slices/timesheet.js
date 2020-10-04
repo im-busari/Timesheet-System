@@ -5,9 +5,12 @@ import { normalize, schema } from "normalizr";
 const initialState = {
   ids: [],
   byId: {},
+  currentTimesheet: null,
+  currentTimesheetId: null,
+  error: null,
 };
 
-const timesheetSchema = new schema.Entity("posts");
+const timesheetSchema = new schema.Entity("timesheets");
 const timesheetsListSchema = new schema.Array(timesheetSchema);
 
 const { reducer, actions } = createSlice({
@@ -16,12 +19,9 @@ const { reducer, actions } = createSlice({
   reducers: {
     fetch: (state, action) => {
       const timesheets = action.payload;
-      console.log(timesheets[0].data.id);
 
       timesheets.forEach((timesheet) => {
-        console.log(timesheet);
         const timesheetId = timesheet.data.id;
-        console.log(timesheetId);
 
         if (!state.byId[timesheetId]) {
           state.ids.push(timesheetId);
@@ -30,17 +30,17 @@ const { reducer, actions } = createSlice({
         state.byId[timesheetId] = timesheet;
       });
 
-      state.getError = null;
+      state.error = null;
     },
     fetchError: (state, action) => {
-      return { ...state, getError: action.payload };
+      state.error = action.payload;
     },
     fetchOne: (state, action) => {
       state.currentTimesheet = action.payload;
-      state.getError = null;
+      state.error = null;
     },
     fetchOneError: (state, action) => {
-      state.getError = action.payload;
+      state.error = action.payload;
     },
     create: (state, action) => {
       const timesheetId = action.payload.data.id;
@@ -49,11 +49,11 @@ const { reducer, actions } = createSlice({
         state.timesheets[timesheetId] = action.payload;
       }
 
-      state.createError = null;
+      state.error = null;
       state.currentTimesheetId = timesheetId;
     },
     createError: (state, action) => {
-      return { ...state, createError: action.payload };
+      return { ...state, error: action.payload };
     },
     update: (state, action) => {
       const timesheetId = action.payload.data.id;
@@ -61,7 +61,7 @@ const { reducer, actions } = createSlice({
       state.timesheets[timesheetId] = action.payload;
     },
     updateError: (state, action) => {
-      return { ...state, updateError: action.payload };
+      return { ...state, error: action.payload };
     },
     delete: (state, action) => {
       const timesheetId = action.payload;
@@ -71,31 +71,32 @@ const { reducer, actions } = createSlice({
       }
     },
     deleteError: (state, action) => {
-      return { ...state, deleteError: action.payload };
+      return { ...state, error: action.payload };
     },
 
     addEmptyEntry: (state, action) => {
-      const timesheetId = action.payload;
-
-      if (!state.timesheets[timesheetId]) {
-        state.timesheets[timesheetId] = {};
-      }
-
-      if (!state.timesheets[timesheetId].entries) {
-        state.timesheets[timesheetId].entries = [];
-      }
-
-      state.timesheets[timesheetId].entries.push({
-        projectId: null,
-        taskId: null,
-        mon: 0,
-        tue: 0,
-        wed: 0,
-        thu: 0,
-        fri: 0,
-        sat: 0,
-        sun: 0,
-      });
+      // const timesheetId = action.payload;
+      //
+      // if (!state.byId[timesheetId]) {
+      //   state.ids.push(timesheetId);
+      //   state.byId[timesheetId] = {}
+      // }
+      //
+      // if (!state.byId[timesheetId].entries) {
+      //   state.byId[timesheetId].entries = [];
+      // }
+      //
+      // state.byId[timesheetId].entries.push({
+      //   projectId: null,
+      //   taskId: null,
+      //   mon: 0,
+      //   tue: 0,
+      //   wed: 0,
+      //   thu: 0,
+      //   fri: 0,
+      //   sat: 0,
+      //   sun: 0,
+      // });
     },
 
     clearCurrent: (state) => {
@@ -111,7 +112,6 @@ export const getTimesheetsForUser = () => {
     try {
       const timesheetsRaw = await timesheet.get.allTimesheetsForUser();
       const timesheets = timesheetsRaw.map((ts) => ts.timesheet);
-      console.log(timesheets);
       dispatch(actions.fetch(timesheets));
     } catch (error) {
       dispatch(actions.fetchError(error.message));

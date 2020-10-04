@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { projects } from "../../api";
 
 const initialState = {
-  projects: {},
+  ids: [],
+  byId: {},
   error: null,
 };
 
@@ -11,17 +12,17 @@ const { reducer, actions } = createSlice({
   initialState,
   reducers: {
     fetch: (state, action) => {
-      const allProjects = action.payload;
+      const projects = action.payload;
 
-      for (const project of allProjects) {
+      projects.forEach((project) => {
         const projectId = project.id;
 
-        if (!state.projects[projectId]) {
-          state.projects[projectId] = {};
+        if (!state.byId[projectId]) {
+          state.ids.push(projectId);
         }
 
-        state.projects[projectId] = project;
-      }
+        state.byId[projectId] = project;
+      });
     },
     fetchError: (state, action) => {
       state.error = action.payload;

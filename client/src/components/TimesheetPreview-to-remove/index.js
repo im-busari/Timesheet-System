@@ -1,5 +1,5 @@
 import React from "react";
-import { TimesheetPreviewListItem } from "../TimesheetPreviewListItem";
+import { TimesheetListItem } from "../TimesheetListItem";
 import { Table } from "react-bootstrap";
 import { TableHeader } from "./styles";
 import { sortTimesheets } from "../../utils/sortTimesheets";
@@ -16,7 +16,7 @@ export const TimesheetPreview = ({ timesheets }) => {
 
   // const allTimesheets = timesheets.sort(sortTimesheets).map((timesheet) => {
   //   return (
-  //     <TimesheetPreviewListItem
+  //     <TimesheetListItem
   //       startDate={timesheet?.data?.startDate}
   //       status={timesheet?.data?.status}
   //       key={timesheet?.data?.id}
@@ -38,7 +38,7 @@ export const TimesheetPreview = ({ timesheets }) => {
         </tr>
       </thead>
       <tbody>
-        <TimesheetPreviewListItem
+        <TimesheetListItem
           startDate={timesheet?.data?.startDate}
           status={timesheet?.data?.status}
           key={timesheet?.data?.id}

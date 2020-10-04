@@ -8,22 +8,21 @@ import {
   parse as parseDate,
   endOfWeek,
 } from "date-fns";
+import { useSelector } from "react-redux";
 
-export const TimesheetPreviewListItem = ({
-  timesheetId,
-  startDate: startDateString,
-  status,
-  onDelete,
-}) => {
+export const TimesheetListItem = ({ timesheetId }) => {
+  const timesheet = useSelector((state) => state.timesheets.byId[timesheetId]);
+  const { status, startDate } = timesheet.data;
+
   const isSubmitted = status === "Submitted";
 
-  const [year, month, day] = startDateString.split("-").reverse();
+  const [year, month, day] = startDate.split("-").reverse();
 
-  const startDate = new Date(year, month - 1, day);
-  const startDateFormatted = formatDate(startDate, "dd-MM");
+  const startDateFormat = new Date(year, month - 1, day);
+  const startDateFormatted = formatDate(startDateFormat, "dd-MM");
 
   const endDateFormatted = formatDate(
-    endOfWeek(startDate, { weekStartsOn: 1 }),
+    endOfWeek(startDateFormat, { weekStartsOn: 1 }),
     "dd-MM"
   );
 
@@ -42,9 +41,10 @@ export const TimesheetPreviewListItem = ({
         <Button
           variant="danger"
           disabled={isSubmitted}
-          onClick={() => {
-            onDelete(timesheetId);
-          }}
+          // onClick={() => {
+          //     // eslint-disable-next-line no-undef
+          //   onDelete(timesheetId);
+          // }}
         >
           Delete
         </Button>
