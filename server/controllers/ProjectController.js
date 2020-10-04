@@ -6,7 +6,7 @@ class ProjectController {
      *
      * Gets all projects form the database.
      *
-     * Returns an object containing all the projects data.
+     * @return {Promise<void>} an object containing all the projects data.
      */
     async getAllProjects(req, res) {
         try {
@@ -32,7 +32,7 @@ class ProjectController {
      *
      * Gets a project form the database.
      *
-     * Returns an object containing the project data.
+     * @return {Promise<void>} an object containing the project data.
      */
     async getProjectById(req, res) {
         try {

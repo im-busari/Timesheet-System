@@ -8,7 +8,7 @@ class TimesheetController {
      *
      * Finds all timesheets for the current user.
      *
-     * Returns an object with all timesheets' data and its relations.
+     * @return {Promise<void>} Object with all timesheets' data and its relations.
      */
     async getTimesheetsByUserId(req, res) {
         try {
@@ -64,7 +64,7 @@ class TimesheetController {
      *
      * Finds a timesheet by the given id.
      *
-     * Returns an object with all timesheets' data and its relations.
+     * @return {Promise<void>} Object with all timesheets' data and its relations.
      */
     async getTimesheetById(req, res) {
         /* Checks if the timesheet is a valid uuid. */
@@ -107,7 +107,7 @@ class TimesheetController {
      *
      * Updates a timesheet's relations by the given data from the input.
      *
-     * Returns a redirect to the {@link getTimesheetById}.
+     * @return {Promise<void>} Redirect to the {@link getTimesheetById}.
      */
     async updateTimesheet(req, res) {
         try {
@@ -206,7 +206,7 @@ class TimesheetController {
      *
      * Creates a new timesheet by start date given from the input.
      *
-     * Returns an object containing the newly created timesheet.
+     * @return {Promise<void>} Object containing the newly created timesheet.
      */
     async createTimesheet(req, res) {
         try {
@@ -251,7 +251,7 @@ class TimesheetController {
      *
      * Deletes the timesheet if existing.
      *
-     * Returns a message that says if the deletion is successful.
+     * @return {Promise<void>} Message that says if the deletion is successful.
      */
     async deleteTimesheet(req, res) {
         // Checks if the id is valid
@@ -284,7 +284,7 @@ class TimesheetController {
      *
      * Helping function for development environment.
      *
-     * Returns all days for the given timesheet entry.
+     * @return {Promise<void>} All days for the given timesheet entry.
      */
     async getTimesheetEntryDays(req, res) {
         try {
