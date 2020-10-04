@@ -18,20 +18,6 @@ export const Entry = ({
   const projectIds = useSelector((state) => state.projects.ids);
   const [project, setProject] = useState(entry.data.projectId);
   const tasks = useSelector((state) => state.projects.byId[project]?.tasks);
-  console.log(project);
-  console.log(tasks);
-  // const { projectId } = entry.data
-  // const { taskId } = entry.data
-
-  // const getProjectNameAndTaskName = async (projectId, taskId) => {
-  //   const project = await projects.get.projectById(projectId)
-  //   const task = project.projects.tasks.filter(p => p.id === taskId)
-
-  //   return {
-  //     project: project.projects.name,
-  //     task: task[0].name
-  //   }
-  // }
 
   return (
     <Row as={EntryRow}>

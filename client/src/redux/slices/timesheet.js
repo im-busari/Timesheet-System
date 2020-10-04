@@ -5,8 +5,6 @@ import { normalize, schema } from "normalizr";
 const initialState = {
   ids: [],
   byId: {},
-  currentTimesheet: null,
-  currentTimesheetId: null,
   error: null,
 };
 
@@ -45,12 +43,12 @@ const { reducer, actions } = createSlice({
     create: (state, action) => {
       const timesheetId = action.payload.data.id;
 
-      if (!state.timesheets[timesheetId]) {
-        state.timesheets[timesheetId] = action.payload;
+      if (!state.byId[timesheetId]) {
+        state.ids.push(timesheetId);
       }
 
       state.error = null;
-      state.currentTimesheetId = timesheetId;
+      state.byId[timesheetId] = action.payload;
     },
     createError: (state, action) => {
       return { ...state, error: action.payload };

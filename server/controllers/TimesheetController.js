@@ -13,9 +13,9 @@ class TimesheetController {
 
       if (timesheets.length !== 0) {
         const result = [];
-        const entries = [];
 
         for (const timesheet in timesheets) {
+          const entries = [];
           const element = {};
           const current = timesheets[timesheet];
           const entriesResult = await current.getTimesheetEntries();
