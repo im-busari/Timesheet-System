@@ -1,69 +1,70 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { auth, users } from "src/api";
+import { user } from "../../api";
 
 const initialState = {
-	userId: null,
-	error: null,
-	isSessionChecked: false,
+  userId: null,
+  error: null,
+  isSessionChecked: false,
 };
 
 const { reducer, actions } = createSlice({
-	name: "auth",
-	initialState,
-	reducers: {
-		setUser: (state, action) => ({
-			...state,
-			userId: action?.payload?.id,
-		}),
-		setUserFail: (state, action) => {
-			return { ...state, error: action.payload, userId: null };
-		},
-		checkSession: (state) => ({ ...state, isSessionChecked: true }),
-		logout: () => {
-			return { ...initialState, isSessionChecked: true };
-		},
-	},
+  name: "auth",
+  initialState,
+  reducers: {
+    setUser: (state, action) => ({
+      ...state,
+      userId: action.payload.id,
+      error: null,
+    }),
+    setUserFail: (state, action) => {
+      return { ...state, error: action.payload, userId: null };
+    },
+    checkSession: (state) => ({ ...state, isSessionChecked: true }),
+    logout: () => {
+      return { ...initialState, isSessionChecked: true };
+    },
+  },
 });
 
 export { reducer as authReducer, actions as authActions };
 
-export const login = ({ username, password }) => {
-	return async (dispatch) => {
-		const user = await auth.post
-			.login({ username, password })
-			.catch((error) => {
-				dispatch(actions.setUserFail(error?.response?.data?.message));
-			});
-		dispatch(actions.setUser(user));
-	};
+export const login = ({ email, password }) => {
+  return async (dispatch) => {
+    try {
+      const currentUser = await user.post.login({ email, password });
+      dispatch(actions.setUser(currentUser));
+    } catch (error) {
+      dispatch(actions.setUserFail(error.message));
+    }
+  };
 };
 
-export const register = ({ name, username, password }) => {
-	return async (dispatch) => {
-		const user = await auth.post
-			.register({ name, username, password })
-			.catch((error) => {
-				dispatch(actions.setUserFail(error?.response?.data?.message));
-			});
-
-		dispatch(actions.setUser(user));
-	};
+export const register = ({ email, username, password }) => {
+  return async (dispatch) => {
+    try {
+      const newUser = await user.post.register({ email, username, password });
+      dispatch(actions.setUser(newUser));
+    } catch (error) {
+      dispatch(actions.setUserFail(error.message));
+    }
+  };
 };
 
 export const logout = () => {
-	return async (dispatch) => {
-		await auth.post.logout();
-		dispatch(actions.logout());
-	};
+  return async (dispatch) => {
+    await user.post.logout();
+    dispatch(actions.logout());
+  };
 };
 
 export const checkSession = () => {
-	return async (dispatch) => {
-		// Empty catch block, since 401s here are normal and don't need handling
-		// Such responses will be gotten, if the user has no session open, and we just
-		// redirect the user to the login page
-		const user = await users.get.current().catch((e) => {});
-		dispatch(actions.setUser(user));
-		dispatch(actions.checkSession());
-	};
+  return async (dispatch) => {
+    try {
+      const currentUser = await user.get.currentUser();
+      dispatch(actions.setUser(currentUser));
+      dispatch(actions.checkSession());
+    } catch (error) {
+      dispatch(actions.checkSession());
+    }
+  };
 };
