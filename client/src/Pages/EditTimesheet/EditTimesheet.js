@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  MainContainer,
+  BtnsContainer,
   Header,
   Information,
-  WeekInfo,
+  MainContainer,
   UserInfo,
-  BtnsContainer,
+  WeekInfo,
 } from "./EditTimesheetStyledComponents";
 import { Button } from "../../components/generic/Button";
 import { Container } from "react-bootstrap";
 import { TableHeader } from "./TableHeader";
-import { TableFooter } from "./TableFooter";
 import { Entry } from "./Entry";
-import uuid from "react-uuid";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useHistory } from "react-router-dom";
-import {
-  clearCurrentTimesheet,
-  deleteTimesheet,
-  getTimesheetsForUser,
-} from "../../redux/slices/timesheet";
-import { current } from "@reduxjs/toolkit";
+import { TableFooter } from "./TableFooter";
+import { DefaultContext } from "react-icons";
+import { DefaultEntry } from "./DefaultEntry";
+import { deleteTimesheet, updateTimesheet } from "../../redux/slices/timesheet";
 
 export const EditTimesheet = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-
   const loggedUserId = useSelector((state) => state.auth.userId);
   const loggedUser = useSelector(
     (state) => state.users.usersById[loggedUserId]
@@ -33,164 +28,84 @@ export const EditTimesheet = () => {
 
   const { timesheetId } = useParams();
   const currentTimesheet = useSelector(
-    (state) => state.timesheets.timesheets[timesheetId]
+    (state) => state.timesheets.byId[timesheetId]
   );
 
-  useEffect(() => {
-    dispatch(getTimesheetsForUser());
-    return () => dispatch(clearCurrentTimesheet());
-  }, [dispatch]);
-
-  const [entries, setEntries] = useState([
-    {
-      id: uuid(),
-      project: null,
-      task: null,
-      mon: 0,
-      tue: 0,
-      wed: 0,
-      thu: 0,
-      fri: 0,
-      sat: 0,
-      sun: 0,
-    },
-  ]);
-
-  const addEmptyEntry = (event, entryId) => {
-    event.persist();
-
-    entries.forEach((entry) => {
-      if (entry.id === entryId && entry.project === null) {
-        setEntries((prevState) => {
-          return [
-            ...prevState,
-            {
-              id: uuid(),
-              project: null,
-              task: null,
-              mon: 0,
-              tue: 0,
-              wed: 0,
-              thu: 0,
-              fri: 0,
-              sat: 0,
-              sun: 0,
-            },
-          ];
-        });
-      }
-    });
-  };
-
-  const handleChange = (event, entryId) => {
-    const { id, value } = event.target;
-
-    /* Handles the change of a project */
-    if (id === "project") {
-      setEntries((prevState) => {
-        return prevState.map((entry) => {
-          if (entry.id === entryId) {
-            return { ...entry, project: event.target.value };
-          } else {
-            return entry;
-          }
-        });
-      });
-      /* Handles the change of a task */
-    } else if (id === "task") {
-      setEntries((prevState) => {
-        return prevState.map((entry) => {
-          if (entry.id === entryId) {
-            return { ...entry, task: event.target.value };
-          } else {
-            return entry;
-          }
-        });
-      });
-      /* Handles the change of work hours */
-    } else {
-      setEntries((prevState) => {
-        return prevState.map((entry) => {
-          if (entry.id === entryId) {
-            if (!isNaN(parseInt(value))) {
-              return { ...entry, [id]: parseInt(value) };
-            } else {
-              return { ...entry, [id]: 0 };
-            }
-          } else {
-            return entry;
-          }
-        });
-      });
-    }
-  };
-
-  const handleEntryDelete = (entryId) => {
-    if (entries.length > 1) {
-      setEntries((prevState) =>
-        prevState.filter((entry) => entry.id !== entryId)
-      );
-    }
-  };
-
-  const handleClick = (event) => {
-    const { id } = event.target;
-
-    if (id === "delete") {
-      dispatch(deleteTimesheet({ id: timesheetId }));
-      history.push("/");
-    } else if (id === "save") {
-    } else {
-    }
-  };
+  const currentEntries = useSelector(
+    (state) => state.timesheets.byId[timesheetId]?.entries
+  );
 
   return (
     <>
-      {currentTimesheet && (
+      {timesheetId && (
         <MainContainer>
           <Header>
             <Information>
-              <WeekInfo>{`Timesheet for week ${currentTimesheet.data.startDate
+              <WeekInfo>{`Timesheet for week ${currentTimesheet?.data?.startDate
                 .split("-")
                 .join(".")}`}</WeekInfo>
               <UserInfo>{`User: ${loggedUser.username}`}</UserInfo>
             </Information>
 
-            <BtnsContainer>
-              <Button
-                backgroundColor="danger"
-                text="Delete"
-                id="delete"
-                onClick={handleClick}
-              />
-              <Button backgroundColor="orange" text="Save" id="save" />
-              <Button backgroundColor="green" text="Submit" />
-            </BtnsContainer>
+            {currentTimesheet.data.status !== "Submitted" ? (
+              <BtnsContainer>
+                <Button
+                  backgroundColor="danger"
+                  text="Delete"
+                  id="delete"
+                  onClick={() => {
+                    console.log("Dispatch delete!");
+                    dispatch(deleteTimesheet({ timesheetId }));
+                    history.push("/");
+                  }}
+                />
+                <Button
+                  backgroundColor="orange"
+                  text="Save"
+                  id="save"
+                  onClick={() => {
+                    dispatch(
+                      updateTimesheet({ currentTimesheet, submitted: false })
+                    );
+                    history.push("/");
+                  }}
+                />
+                <Button
+                  backgroundColor="green"
+                  text="Submit"
+                  onClick={() => {
+                    dispatch(
+                      updateTimesheet({ currentTimesheet, submitted: true })
+                    );
+                    history.push("/");
+                  }}
+                />
+              </BtnsContainer>
+            ) : (
+              "Submitted"
+            )}
           </Header>
-
           <Container fluid>
             <TableHeader startDate={currentTimesheet.data.startDate} />
-
-            <Entry
-              key="default entry key"
-              entryId="default entry id"
-              addEmptyEntry={addEmptyEntry}
-              handleChange={handleChange}
-              handleEntryDelete={handleEntryDelete}
-            />
+            {/*    need to get date from header and pass it to state */}
             {currentTimesheet &&
-              currentTimesheet.entries.map((entry) => (
+              currentTimesheet.entries.map((entry, index) => (
                 <Entry
-                  key={entry.data.id}
-                  entryId={entry.data.id}
+                  disabled={currentTimesheet.data.status === "Submitted"}
+                  key={index}
+                  timesheetId={timesheetId}
+                  entryIndex={index}
                   entry={entry}
-                  addEmptyEntry={addEmptyEntry}
-                  handleChange={handleChange}
-                  handleEntryDelete={handleEntryDelete}
+                  startDate={currentTimesheet.data.startDate}
                 />
               ))}
-
-            <TableFooter entries={entries} />
+            {currentTimesheet.data.status !== "Submitted" && (
+              <DefaultEntry timesheetId={timesheetId} />
+            )}
+            <TableFooter
+              entries={currentEntries}
+              startDate={currentTimesheet.data.startDate}
+            />
           </Container>
         </MainContainer>
       )}

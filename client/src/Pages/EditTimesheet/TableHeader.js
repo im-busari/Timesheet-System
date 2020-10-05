@@ -11,40 +11,43 @@ export const TableHeader = ({ startDate }) => {
   return (
     <Row as={HeaderFooterRow}>
       <Col as={StyledCol}></Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
+      <Col as={StyledCol} sm={3} md={3} lg={3} xl={3}>
         Project
       </Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}>
-        Task
+      <Col as={StyledCol}>Task</Col>
+      <Col as={StyledCol}>
+        {"Mon"} <br /> {format(new Date(year, month - 1, day), "dd.MM")}
       </Col>
-      <Col as={StyledCol}>{`Mon\n${format(
-        new Date(year, month - 1, day),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Tue\n${format(
-        addDays(new Date(year, month - 1, day), 1),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Wed\n${format(
-        addDays(new Date(year, month - 1, day), 2),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Thu\n${format(
-        addDays(new Date(year, month - 1, day), 3),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Fri\n${format(
-        addDays(new Date(year, month - 1, day), 4),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Sat\n${format(
-        addDays(new Date(year, month - 1, day), 5),
-        "dd.MM"
-      )}`}</Col>
-      <Col as={StyledCol}>{`Sun\n${format(
-        addDays(new Date(year, month - 1, day), 6),
-        "dd.MM"
-      )}`}</Col>
+      <Col as={StyledCol}>
+        {"Tue"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 1), "dd.MM")}{" "}
+      </Col>
+      <Col as={StyledCol}>
+        {"Wen"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 2), "dd.MM")}{" "}
+      </Col>
+      <Col as={StyledCol}>
+        {"Thu"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 3), "dd.MM")}{" "}
+      </Col>
+      <Col as={StyledCol}>
+        {"Fri"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 4), "dd.MM")}{" "}
+      </Col>
+      <Col as={StyledCol}>
+        {"Sat"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 5), "dd.MM")}{" "}
+      </Col>
+      <Col as={StyledCol}>
+        {"Sun"}
+        <br />
+        {format(addDays(new Date(year, month - 1, day), 6), "dd.MM")}{" "}
+      </Col>
       <Col as={StyledCol}>Total</Col>
     </Row>
   );

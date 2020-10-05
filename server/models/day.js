@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.TimesheetEntry = Day.belongsTo(models.TimesheetEntry, {
         foreignKey: 'timesheetEntryId',
+        onDelete: 'CASCADE',
       });
     }
   }

@@ -1,31 +1,34 @@
 import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import { TableData, LongTableData } from "./styles";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   addDays,
   format as formatDate,
   parse as parseDate,
   endOfWeek,
 } from "date-fns";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTimesheet } from "../../redux/slices/timesheet";
 
-export const TimesheetPreviewListItem = ({
-  timesheetId,
-  startDate: startDateString,
-  status,
-  onDelete,
-}) => {
+export const TimesheetListItem = ({ timesheetId }) => {
+  const timesheet = useSelector((state) => state.timesheets.byId[timesheetId]);
+  const { status, startDate } = timesheet.data;
+
   const isSubmitted = status === "Submitted";
 
-  const [year, month, day] = startDateString.split("-").reverse();
+  const [year, month, day] = startDate.split("-").reverse();
 
-  const startDate = new Date(year, month - 1, day);
-  const startDateFormatted = formatDate(startDate, "dd-MM");
+  const startDateFormat = new Date(year, month - 1, day);
+  const startDateFormatted = formatDate(startDateFormat, "dd-MM");
 
   const endDateFormatted = formatDate(
-    endOfWeek(startDate, { weekStartsOn: 1 }),
+    endOfWeek(startDateFormat, { weekStartsOn: 1 }),
     "dd-MM"
   );
+
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   return (
     <tr>
@@ -43,7 +46,9 @@ export const TimesheetPreviewListItem = ({
           variant="danger"
           disabled={isSubmitted}
           onClick={() => {
-            onDelete(timesheetId);
+            console.log("Dispatch delete!");
+            dispatch(deleteTimesheet({ timesheetId }));
+            history.push("/");
           }}
         >
           Delete

@@ -14,5 +14,10 @@ router.get(
   '/entries/days/:timesheetEntryId',
   TimesheetController.getTimesheetEntryDays
 );
+router.delete(
+  '/entries/:timesheetEntryId',
+  isAuth,
+  TimesheetController.deleteTimesheetEntry
+);
 
 module.exports = router;

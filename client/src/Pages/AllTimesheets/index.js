@@ -1,39 +1,51 @@
 import React, { useEffect } from "react";
 import { Layout } from "../Layout";
-import { TimesheetPreview } from "../../components/TimesheetPreview";
+import { TimesheetPreview } from "../../components/TimesheetPreview-to-remove";
 import { useDispatch, useSelector } from "react-redux";
 import { getTimesheetsForUser } from "../../redux/slices/timesheet";
 import { getAllProjects } from "../../redux/slices/project";
 import { NoTimesheetMessage } from "../../components/NoTimesheetMessage";
+import { TableHeader } from "../../components/TimesheetPreview-to-remove/styles";
+import { TimesheetListItem } from "../../components/TimesheetListItem";
+import { Table } from "react-bootstrap";
 
 export const AllTimesheetsPage = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getTimesheetsForUser());
     dispatch(getAllProjects());
   }, [dispatch]);
 
-  const timesheets = useSelector((state) =>
-    Object.values(state.timesheets.timesheets)
-  );
+  const timesheetIds = useSelector((state) => state.timesheets.ids);
 
-  const error = useSelector((state) => state.timesheets.getError);
+  useEffect(() => {
+    dispatch(getTimesheetsForUser());
+  }, [dispatch, timesheetIds]);
 
   return (
     <Layout>
-      {!error?.includes("404") ? (
+      {timesheetIds.length ? (
         <div>
-          <p>Seems like something has gone wrong.</p>
-          <p>Our bad.</p>
+          <Table bordered hover>
+            <thead>
+              <tr>
+                <TableHeader>Start Date</TableHeader>
+                <TableHeader>End Date</TableHeader>
+                <TableHeader>Status</TableHeader>
+                <TableHeader>Update</TableHeader>
+                <TableHeader>Remove</TableHeader>
+              </tr>
+            </thead>
+            <tbody>
+              {timesheetIds.map((id) => (
+                <TimesheetListItem key={id} timesheetId={id} />
+              ))}
+            </tbody>
+          </Table>
         </div>
       ) : (
-        <div>
-          {timesheets.length ? (
-            <TimesheetPreview timesheets={timesheets} />
-          ) : (
-            <NoTimesheetMessage />
-          )}
-        </div>
+        <NoTimesheetMessage />
       )}
     </Layout>
   );

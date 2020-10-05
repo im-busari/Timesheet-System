@@ -8,7 +8,10 @@ import {
 import { Title } from "../../components/generic/Title";
 import { startOfWeek, subWeeks, addWeeks, format, endOfWeek } from "date-fns";
 import { useDispatch, useSelector } from "react-redux";
-import { createTimesheet } from "../../redux/slices/timesheet";
+import {
+  clearCurrentTimesheet,
+  createTimesheet,
+} from "../../redux/slices/timesheet";
 import { useHistory } from "react-router-dom";
 
 export const CreateTimesheet = () => {
@@ -29,8 +32,9 @@ export const CreateTimesheet = () => {
   React.useEffect(() => {
     if (createdTimesheet !== null) {
       history.push(`/timesheets/edit/${createdTimesheet}`);
+      dispatch(clearCurrentTimesheet());
     }
-  }, [createdTimesheet]);
+  }, [dispatch, history, createdTimesheet]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

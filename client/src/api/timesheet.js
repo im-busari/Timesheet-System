@@ -7,7 +7,7 @@ export const get = {
   },
 
   timesheetById: async ({ timesheetId }) => {
-    const res = await axios.get(`/timesheet/${timesheetId}`);
+    const res = await axios.get(`/timesheets/${timesheetId}`);
     return res.data;
   },
 };
@@ -23,9 +23,11 @@ export const post = {
 };
 
 export const patch = {
-  update: async ({ timesheetId, entries }) => {
+  update: async ({ timesheetId, entries, submitted }) => {
+    console.log(entries);
     const res = await axios.patch(`/timesheets/${timesheetId}`, {
       entries,
+      submitted,
     });
 
     return res.data;
@@ -35,6 +37,10 @@ export const patch = {
 export const del = {
   delete: async ({ timesheetId }) => {
     const res = await axios.delete(`/timesheets/${timesheetId}`);
+    return res.data;
+  },
+  deleteEntry: async ({ timesheetEntryId }) => {
+    const res = await axios.delete(`/timesheets/entries/${timesheetEntryId}`);
     return res.data;
   },
 };

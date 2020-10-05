@@ -1,38 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 import { StyledCol, HeaderFooterRow } from "./EditTimesheetStyledComponents";
+import { addDays, format } from "date-fns";
 
-export const TableFooter = ({ entries }) => {
-  const [hours, setHours] = useState({
-    mon: 0,
-    tue: 0,
-    wed: 0,
-    thu: 0,
-    fri: 0,
-    sat: 0,
-    sun: 0,
-    total: 0,
-  });
+export const TableFooter = ({ entries, startDate }) => {
+  const [hours, setHours] = useState({});
+  const [day, month, year] = startDate.split("-");
+
+  const formatDays = (increaseInt) => {
+    return format(
+      addDays(new Date(year, month - 1, day), increaseInt),
+      "dd-MM-yyyy"
+    );
+  };
+
+  const monday = formatDays(0);
+  const tuesday = formatDays(1);
+  const wednesday = formatDays(2);
+  const thursday = formatDays(3);
+  const friday = formatDays(4);
+  const saturday = formatDays(5);
+  const sunday = formatDays(6);
 
   useEffect(() => {
     setHours(() => {
       const newHours = {};
 
       entries.map((entry) => {
-        for (const key in entry) {
-          const keysToIgnore = ["id", "project", "task"];
+        for (const key in entry.days) {
+          const day = entry.days[key].hours;
 
-          if (!keysToIgnore.includes(key.toString())) {
-            if (!newHours[key]) {
-              newHours[key] = 0;
-            }
-            if (isNaN(newHours["total"])) {
-              newHours["total"] = 0;
-            }
-
-            newHours[key] += entry[key];
-            newHours["total"] += entry[key];
+          if (!newHours[entry.days[key].date]) {
+            newHours[entry.days[key].date] = 0;
           }
+          if (isNaN(newHours["total"])) {
+            newHours["total"] = 0;
+          }
+
+          newHours[entry.days[key].date] += day;
+          newHours["total"] += day;
         }
       });
       return newHours;
@@ -42,15 +48,17 @@ export const TableFooter = ({ entries }) => {
   return (
     <Row as={HeaderFooterRow}>
       <Col as={StyledCol}></Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}></Col>
-      <Col as={StyledCol} sm={2} md={2} lg={2} xl={2}></Col>
-      <Col as={StyledCol}>{hours.mon !== 0 ? hours.mon : null}</Col>
-      <Col as={StyledCol}>{hours.tue !== 0 ? hours.tue : null}</Col>
-      <Col as={StyledCol}>{hours.wed !== 0 ? hours.wed : null}</Col>
-      <Col as={StyledCol}>{hours.thu !== 0 ? hours.thu : null}</Col>
-      <Col as={StyledCol}>{hours.fri !== 0 ? hours.fri : null}</Col>
-      <Col as={StyledCol}>{hours.sat !== 0 ? hours.sat : null}</Col>
-      <Col as={StyledCol}>{hours.sun !== 0 ? hours.sun : null}</Col>
+      <Col as={StyledCol} sm={3} md={3} lg={3} xl={3}></Col>
+      <Col as={StyledCol}></Col>
+      <Col as={StyledCol}>{hours[monday] !== 0 ? hours[monday] : null}</Col>
+      <Col as={StyledCol}>{hours[tuesday] !== 0 ? hours[tuesday] : null}</Col>
+      <Col as={StyledCol}>
+        {hours[wednesday] !== 0 ? hours[wednesday] : null}
+      </Col>
+      <Col as={StyledCol}>{hours[thursday] !== 0 ? hours[thursday] : null}</Col>
+      <Col as={StyledCol}>{hours[friday] !== 0 ? hours[friday] : null}</Col>
+      <Col as={StyledCol}>{hours[saturday] !== 0 ? hours[saturday] : null}</Col>
+      <Col as={StyledCol}>{hours[sunday] !== 0 ? hours[sunday] : null}</Col>
       <Col as={StyledCol}>{hours.total !== 0 ? hours.total : null}</Col>
     </Row>
   );
