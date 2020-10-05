@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ProjectOption } from "./components/ProjectOption";
 import { format, addDays } from "date-fns";
 import { isInteger } from "formik";
+import uuid from "react-uuid";
+import { DismissibleAlert } from "../../components/DismissibleAlert";
 
 export const Entry = ({
   disabled,
@@ -57,6 +59,11 @@ export const Entry = ({
       e.target.value = null;
       console.log("Inside func", typeof e.target.value);
     }
+
+    if (e.target.value < 0.25 || e.target.value > 24) {
+      e.target.value = null;
+    }
+
     const hours = +e.target.value;
     dispatch(
       updateDay({
@@ -93,7 +100,7 @@ export const Entry = ({
                   entryId: entry.data.id,
                   project,
                   task,
-                  entryIndex,
+                  entryIndex: entry.index,
                   timesheetId,
                 })
               );

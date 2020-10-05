@@ -9,6 +9,7 @@ const initialState = {
   error: null,
   isDeleting: false,
   currentTimesheetId: null,
+  counter: 0,
 };
 
 // const timesheetSchema = new schema.Entity("timesheets");
@@ -86,6 +87,7 @@ const { reducer, actions } = createSlice({
       let data = [];
       console.log(projectId);
       state.byId[timesheetId].entries.push({
+        index: state.counter++,
         data: {
           projectId: projectId,
           taskId: null,
@@ -156,20 +158,35 @@ const { reducer, actions } = createSlice({
       state.byId[timesheetId].entries[entryIndex].data.projectId = projectId;
     },
 
-    // TODO: COmplete
+    // TODO: Complete
     deleteEntry: (state, action) => {
       console.log("deleteAction");
 
       const timesheetId = action.payload.timesheetId;
-      const project = action.payload.project;
-      const task = action.payload.task;
+      // const project = action.payload.project;
+      // const task = action.payload.task;
 
-      // state.byId[timesheetId].entries = [
-      //   ...state.byId[timesheetId].entries.filter((item) => {
-      //     console.log(JSON.stringify(item, undefined, 2));
-      //     return item.data.projectId !== project && item.data.taskId !== task;
-      //   }),
-      // ];
+      const entryIndex = action.payload.entryIndex;
+
+      state.byId[timesheetId].entries = state.byId[timesheetId]?.entries.filter(
+        (entry, index) => index !== entryIndex
+      );
+
+      // const leftOnes = [];
+      //
+      // for (const te in state.byId[timesheetId].entries) {
+      //     if (index === te) {
+      //         leftOnes.push(state.byId[timesheetId].entries[te]);
+      //     }
+      // }
+      //
+      // state.byId[timesheetId].entries = leftOnes;
+
+      // state.byId[timesheetId].entries = state.byId[timesheetId].entries.filter((item) => {
+      //     // console.log(JSON.stringify(item, undefined, 2));
+      //     return (item.data.projectId !== project || item.data.taskId !== task) ||
+      //         (item.data.projectId !== project && item.data.taskId !== task);
+      // });
       // console.log(
       //   JSON.stringify(state.byId[timesheetId].entries, undefined, 2)
       // );
@@ -303,6 +320,7 @@ export const deleteTimesheetEntry = ({
   entryId,
   task,
   project,
+  entryIndex,
   timesheetId,
 }) => {
   return async (dispatch) => {
@@ -310,7 +328,7 @@ export const deleteTimesheetEntry = ({
       if (entryId) {
         await timesheet.del.deleteEntry({ timesheetEntryId: entryId });
       }
-      dispatch(actions.deleteEntry({ timesheetId, task, project }));
+      dispatch(actions.deleteEntry({ timesheetId, task, project, entryIndex }));
     } catch (error) {
       dispatch(actions.deleteError(error.message));
     }
