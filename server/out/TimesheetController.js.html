@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: TimesheetController.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: TimesheetController.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {Timesheet, TimesheetEntry, Day} = require('../models');
+const uuidValidator = require('../utils/validateUuid');
+const getUserId = require('../utils/getUserId');
+
+class TimesheetController {
+    /**
+     * GET /timesheets/user
+     *
+     * Finds all timesheets for the current user.
+     *
+     * @return {Promise&lt;void>} Object with all timesheets' data and its relations.
+     */
+    async getTimesheetsByUserId(req, res) {
+        try {
+            /* Find all timesheets b the give user id */
+            const timesheets = await Timesheet.findAll({
+                where: {
+                    userId: getUserId(req),
+                },
+            });
+
+            if (timesheets.length !== 0) {
+                const result = []; // Stores all timesheet records.
+                const entries = [];
+
+                for (const timesheet in timesheets) {
+                    const element = {}; // Stores the current timesheet's data and its relations.
+                    const current = timesheets[timesheet]; // Current timesheet.
+                    const entriesResult = await current.getTimesheetEntries(); // All timesheet entries for the current timesheet
+
+                    for (const index in entriesResult) {
+
+                        // Gets the current timesheet entry from the database.
+                        const entryFromDB = await TimesheetEntry.findByPk(
+                            entriesResult[index].id
+                        )
+
+                        // Get all days related with the current timesheet entry.
+                        const daysForEntry = await entryFromDB.getDays();
+
+                        // Pushes the entry data and its days.
+                        entries.push({data: entriesResult[index], days: daysForEntry});
+                    }
+
+                    element.data = current;
+                    element.entries = entries;
+
+                    result.push({timesheet: element});
+                }
+
+                res.status(201).send(result);
+            } else {
+                res
+                    .status(404)
+                    .send({error: "The user doesn't have any timesheets!"});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * GET /timesheets/:timesheetId
+     *
+     * Finds a timesheet by the given id.
+     *
+     * @return {Promise&lt;void>} Object with all timesheets' data and its relations.
+     */
+    async getTimesheetById(req, res) {
+        /* Checks if the timesheet is a valid uuid. */
+        if (!uuidValidator(req.params.timesheetId)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
+        try {
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet) {
+                /* Next 12 lines of code has the same structure as the above function */
+                const result = [];
+
+                const element = {};
+                const current = timesheet;
+                const entries = await current.getTimesheetEntries();
+
+                element.data = current;
+                element.entries = entries;
+
+                result.push({timesheet: element});
+
+                res.status(201).send(result);
+            } else {
+                res
+                    .status(404)
+                    .send({error: "Timesheet with the given id doesn't exist!"});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     *
+     * PATCH /timesheets/:timesheetId
+     *
+     * Updates a timesheet's relations by the given data from the input.
+     *
+     * @return {Promise&lt;void>} Redirect to the {@link getTimesheetById}.
+     */
+    async updateTimesheet(req, res) {
+        try {
+            // All entries from the input.
+            const entries = req.body.entries;
+
+            // Flag saying if the timesheet is submitted or .
+            const isSubmitted = req.body.submitted;
+
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet.status === 'Submitted') {
+                res.status(403).json({error: 'This timesheet is already submitted!'});
+                return;
+            }
+
+            if (isSubmitted) {
+                timesheet.status = 'Submitted';
+                await timesheet.save();
+            }
+
+            for (const entry of entries) {
+                // If the entry doesn't have an id it will be created a new timesheet entry
+                // with the entry's data.
+                if (!entry.id) {
+                    const newTimesheetEntry = await TimesheetEntry.create({
+                        timesheetId: entry.timesheetId,
+                        projectId: entry.projectId,
+                        taskId: entry.taskId,
+                    });
+                    // If the entry has days, they also will be created.
+                    if (entry.days) {
+                        for (const index in entry.days) {
+                            await Day.create({
+                                timesheetEntryId: newTimesheetEntry.id,
+                                date: entry.days[index].date,
+                                hours: entry.days[index].hours,
+                            });
+                        }
+                    }
+                } else {
+
+                    /* Finds a timesheet entry by the given timesheet entry id. */
+                    const updateTimesheetEntry = await TimesheetEntry.findByPk(entry.id);
+
+                    // If the current entry is not the same as the entry form the database
+                    // the db one will be updated.
+                    if (entry.projectId !== updateTimesheetEntry.projectId) {
+                        updateTimesheetEntry.projectId = entry.projectId;
+                    }
+
+                    // Same logic as the above condition
+                    if (entry.taskId !== updateTimesheetEntry.taskId) {
+                        updateTimesheetEntry.taskId = entry.taskId;
+                    }
+
+                    await updateTimesheetEntry.save();
+
+                    if (entry.days) {
+                        for (const index in entry.days) {
+
+                            // Same logic as the entries with no id
+                            if (entry.days[index].id) {
+                                const updateDay = await Day.findByPk(entry.days[index].id);
+                                // check if stored information is different from req.body.entries.day[index]
+                                if (entry.days[index].date !== updateDay.date) {
+                                    updateDay.date = entry.days[index].date;
+                                }
+                                if (entry.days[index].hours !== updateDay.hours) {
+                                    updateDay.hours = entry.days[index].hours;
+                                }
+                                // save changes inside DB
+                                await updateDay.save();
+                            } else {
+                                //  if new day data was added to timesheetEntry (doesn't have id) -> create new day with association
+                                await Day.create({
+                                    timesheetEntryId: entry.id,
+                                    date: entry.days[index].date,
+                                    hours: entry.days[index].hours,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            res.redirect(`/timesheets/${req.params.timesheetId}`);
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * POST /timesheets
+     *
+     * Creates a new timesheet by start date given from the input.
+     *
+     * @return {Promise&lt;void>} Object containing the newly created timesheet.
+     */
+    async createTimesheet(req, res) {
+        try {
+            // Checks if the timesheet for the current user and date time is created already
+            const allTimesheet = await Timesheet.findOne({
+                where: {
+                    startDate: req.body.startDate,
+                    userId: getUserId(req),
+                },
+            });
+
+            let timesheet;
+
+            // If the timesheet is not found, a new timesheet is created.
+            if (!allTimesheet) {
+                timesheet = await Timesheet.create(
+                    {
+                        status: 'Open',
+                        startDate: req.body.startDate,
+                        userId: getUserId(req),
+                    },
+                    {
+                        includes: {
+                            userId: getUserId(req),
+                        },
+                    }
+                );
+            }
+
+            if (timesheet) {
+                res.status(201).send(timesheet.toJSON());
+            } else {
+                res.status(409).send({error: 'Already created!'});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * DELETE /timesheets/:timesheetId
+     *
+     * Deletes the timesheet if existing.
+     *
+     * @return {Promise&lt;void>} Message that says if the deletion is successful.
+     */
+    async deleteTimesheet(req, res) {
+        // Checks if the id is valid
+        if (!uuidValidator(req.params.timesheetId)) {
+            res.status(404).send({error: 'Invalid timesheet id!'});
+            return;
+        }
+
+        try {
+            /* Finds a timesheet by the given timesheet id. */
+            const timesheet = await Timesheet.findByPk(req.params.timesheetId);
+
+            if (timesheet) {
+                await Timesheet.destroy({
+                    where: {
+                        id: timesheet.id,
+                    },
+                });
+                res.status(201).send({success: 'Deleted successfully!'});
+            } else {
+                res.status(409).json({error: "Timesheet doesn't exist!"});
+            }
+        } catch (err) {
+            res.status(403).json(err);
+        }
+    }
+
+    /**
+     * GET /timesheets/entries/days/:timesheetEntryId
+     *
+     * Helping function for development environment.
+     *
+     * @return {Promise&lt;void>} All days for the given timesheet entry.
+     */
+    async getTimesheetEntryDays(req, res) {
+        try {
+            const entry = await TimesheetEntry.findByPk(req.params.timesheetEntryId);
+            const days = await entry.getDays();
+            res.status(200).send({entry, days});
+        } catch (err) {
+            res.status(500).send({error: err});
+        }
+    }
+}
+
+module.exports = new TimesheetController();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Sun Oct 04 2020 10:03:51 GMT+0300 (Eastern European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
